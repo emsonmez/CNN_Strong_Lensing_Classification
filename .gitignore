@@ -1,1 +1,4 @@
-datasets/castles-fits.tgz
+datasets
+__pycache__/
+.log
+.vscode/

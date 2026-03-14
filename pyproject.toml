@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cnn-from-scratch"
+version = "0.1.0"
+description = "CNN framework with Lean and Prolog verification hooks"
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "jupyter",
+    "pytest",
+    "pytest-cov",
+    "pyswip"
+]
