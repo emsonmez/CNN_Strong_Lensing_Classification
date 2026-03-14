@@ -3,9 +3,9 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cnn-from-scratch"
+name = "CNN_Strong_Lensing_Classification"
 version = "0.1.0"
-description = "CNN framework with Lean and Prolog verification hooks"
+description = ""
 requires-python = ">=3.10"
 
 dependencies = [
