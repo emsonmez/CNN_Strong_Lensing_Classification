@@ -12,8 +12,10 @@ def test_forward_output_shape():
     height = 10
     width = 10
 
+    # Create random input tensor (batch, channels, height, width)
     x = np.random.randn(batch, in_channels, height, width)
 
+    # Initialize convolutional layer
     conv = ConvLayer(
         in_channels=3,
         out_channels=4,
@@ -24,6 +26,7 @@ def test_forward_output_shape():
 
     output = conv.forward(x)
 
+    # Compute expected output spatial dimensions
     expected_h = height - 3 + 1
     expected_w = width - 3 + 1
 
@@ -52,6 +55,7 @@ def test_backward_shapes():
 
     output = conv.forward(x)
 
+    # Random gradient coming from next layer
     dL_dout = np.random.randn(*output.shape)
 
     # store weights to check update

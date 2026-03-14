@@ -2,12 +2,6 @@ import numpy as np
 from scipy.signal import correlate2d
 from typing import Optional, Tuple
 
-
-import numpy as np
-from typing import Optional, Tuple
-from scipy.signal import correlate2d
-
-
 class ConvLayer:
     """
     A single 2D convolutional layer.
@@ -47,8 +41,8 @@ class ConvLayer:
 
         k_h, k_w = kernel_size
 
+        # He-style initialization for weights
         scale = np.sqrt(2.0 / (in_channels * k_h * k_w))
-
         self.weight = np.random.randn(
             out_channels,
             in_channels,
@@ -56,8 +50,10 @@ class ConvLayer:
             k_w
         ) * scale
 
+        # Bias initialized to zeros
         self.bias = np.zeros(out_channels)
 
+        # Store input for backward pass
         self.cache_input: Optional[np.ndarray] = None
 
     def forward(self, x: np.ndarray) -> np.ndarray:
@@ -70,14 +66,16 @@ class ConvLayer:
         :rtype: np.ndarray
         """
 
-        self.cache_input = x
+        self.cache_input = x # Store input for backward
 
         N, C_in, H, W = x.shape
         k_h, k_w = self.kernel_size
 
+        # Compute output spatial dimensions
         H_out = (H + 2 * self.padding - k_h) // self.stride + 1
         W_out = (W + 2 * self.padding - k_w) // self.stride + 1
 
+        # Initialize output tensor
         output = np.zeros((N, self.out_channels, H_out, W_out))
 
         return output
@@ -96,30 +94,32 @@ class ConvLayer:
 
         x = self.cache_input
 
-        dL_dinput = np.zeros_like(x)
-        dL_dfilters = np.zeros_like(self.weight)
-        dL_dbias = np.zeros_like(self.bias)
+        # Initialize gradients
+        dL_dinput = np.zeros_like(x) # gradient w.r.t input
+        dL_dfilters = np.zeros_like(self.weight) # gradient w.r.t weights
+        dL_dbias = np.zeros_like(self.bias) # gradient w.r.t bias
 
+        # Loop over output channels
         for i in range(self.out_channels):
 
-            # gradient w.r.t. filters
+            # Compute gradient of loss w.r.t current filter
             dL_dfilters[i] = correlate2d(
                 x[0, 0],
                 dL_dout[0, i],
                 mode="valid"
             )
 
-            # gradient w.r.t. input
+            # Compute gradient of loss w.r.t input
             dL_dinput[0, 0] += correlate2d(
                 dL_dout[0, i],
                 self.weight[i, 0],
                 mode="full"
             )
 
-            # gradient w.r.t. bias
+            # Compute gradient of loss w.r.t bias
             dL_dbias[i] = np.sum(dL_dout[:, i])
 
-        # update parameters
+        # Update layer parameters
         self.weight -= lr * dL_dfilters
         self.bias -= lr * dL_dbias
 
