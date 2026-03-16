@@ -2,6 +2,7 @@ import numpy as np
 from scipy.signal import correlate2d
 from typing import Optional, Tuple
 
+
 class ConvLayer:
     """
     A single 2D convolutional layer.

@@ -2,8 +2,10 @@ import numpy as np
 from src.layers.conv_layer import ConvLayer
 
 
-def test_forward_output_shape():
+def test_forward():
     """
+    Test the forward pass of the ConvolutionLayer.
+
     Verify that the forward pass produces the expected output shape.
     """
 
@@ -33,8 +35,10 @@ def test_forward_output_shape():
     assert output.shape == (batch, 4, expected_h, expected_w)
 
 
-def test_backward_shapes():
+def test_backward():
     """
+    Test the backward pass of the ConvolutionLayer.
+
     Verify that backward pass returns gradient with same shape as input.
     """
 

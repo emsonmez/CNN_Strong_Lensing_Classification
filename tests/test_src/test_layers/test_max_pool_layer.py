@@ -2,9 +2,12 @@ import numpy as np
 from src.layers.max_pool_layer import MaxPoolLayer
 
 
-def test_forward_maxpool():
+def test_forward():
     """
     Test the forward pass of MaxPoolLayer.
+
+    Verify that the forward pass returns the correct pooled values for a
+    simple deterministic input tensor.
     """
 
     # Create a simple input tensor (C=1, H=4, W=4)
@@ -20,12 +23,16 @@ def test_forward_maxpool():
     expected = np.array([[[6, 8],
                           [14, 16]]])
 
+    # Verify output matches expected pooled values
     assert np.array_equal(out, expected), f"Forward pass output incorrect: {out}"
 
 
-def test_backward_maxpool():
+def test_backward():
     """
     Test the backward pass of MaxPoolLayer.
+
+    Verify that the backward pass propagates gradients only to the
+    positions that contained the maximum values during the forward pass.
     """
 
     # Input tensor (C=1, H=4, W=4)
@@ -48,4 +55,5 @@ def test_backward_maxpool():
                                [0, 0, 0, 0],
                                [0, 3, 0, 4]]])
 
+    # Verify gradients were routed only to max locations
     assert np.array_equal(dL_dinput, expected_grad), f"Backward pass gradient incorrect: {dL_dinput}"
