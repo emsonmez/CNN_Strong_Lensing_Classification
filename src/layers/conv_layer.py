@@ -83,7 +83,7 @@ class ConvLayer:
 
     def backward(self, dL_dout: np.ndarray, lr: float) -> np.ndarray:
         """
-        Perform the backward pass of the convolution layer.
+        Compute the backward pass of the convolution layer.
 
         :param dL_dout: Gradient of the loss with respect to the layer output
         :type dL_dout: np.ndarray

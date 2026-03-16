@@ -11,7 +11,7 @@ class MaxPoolLayer:
 
     def __init__(self, pool_size: int, stride: int):
         """
-        Initialize pooling parameters.
+        Initialize max pooling parameters.
 
         :param pool_size: Height and width of pooling window
         :type pool_size: int
@@ -34,18 +34,18 @@ class MaxPoolLayer:
         self.output_width: Optional[int] = None
         self.output: Optional[np.ndarray] = None
 
-    def forward(self, input_data: np.ndarray) -> np.ndarray:
+    def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Compute forward pass of the max pooling layer.
 
-        :param input_data: Input tensor of shape (C, H, W)
-        :type input_data: np.ndarray
+        :param x: Input tensor of shape (C, H, W)
+        :type x: np.ndarray
         :return: Downsampled feature maps
         :rtype: np.ndarray
         """
 
-        self.cache_input = input_data  # store input for backward pass
-        self.num_channels, self.input_height, self.input_width = input_data.shape
+        self.cache_input = x  # store input for backward pass
+        self.num_channels, self.input_height, self.input_width = x.shape
 
         # Compute output spatial dimensions
         self.output_height = self.input_height // self.pool_size
@@ -65,7 +65,7 @@ class MaxPoolLayer:
                     end_j = start_j + self.pool_size
 
                     # Extract the patch from input
-                    patch = input_data[c, start_i:end_i, start_j:end_j]
+                    patch = x[c, start_i:end_i, start_j:end_j]
 
                     # Assign the maximum value in the patch to output
                     self.output[c, i, j] = np.max(patch)
@@ -74,7 +74,7 @@ class MaxPoolLayer:
     
     def backward(self, dL_dout: np.ndarray) -> np.ndarray:
         """
-        Compute backward pass of max pooling layer.
+        Compute the backward pass of the max pooling layer.
 
         :param dL_dout: Gradient of the loss w.r.t the layer output (C, H_out, W_out)
         :type dL_dout: np.ndarray

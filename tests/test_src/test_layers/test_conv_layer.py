@@ -62,7 +62,7 @@ def test_backward():
     # Random gradient coming from next layer
     dL_dout = np.random.randn(*output.shape)
 
-    # store weights to check update
+    # Store weights to check update
     weights_before = conv.weight.copy()
 
     dL_dinput = conv.backward(dL_dout, lr=0.01)

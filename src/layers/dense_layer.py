@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional, Tuple
+from typing import Optional
 
 
 class DenseLayer:
@@ -55,7 +55,7 @@ class DenseLayer:
     
     def backward(self, dL_dout: np.ndarray, lr: float) -> np.ndarray:
         """
-        Perform the backward pass of the dense layer.
+        Compute the backward pass of the dense layer.
 
         :param dL_dout: Gradient of the loss with respect to the layer output
         :type dL_dout: np.ndarray
