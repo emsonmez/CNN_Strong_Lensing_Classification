@@ -26,7 +26,6 @@ def test_forward():
 
     assert output.shape == (expected_size,)
 
-
 def test_backward():
     """
     Test the backward pass of the FlattenLayer.

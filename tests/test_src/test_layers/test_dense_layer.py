@@ -30,7 +30,6 @@ def test_forward():
     # Verify softmax probabilities sum to 1
     assert np.isclose(np.sum(output), 1.0)
 
-
 def test_backward():
     """
     Test the backward pass of the DenseLayer.

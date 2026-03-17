@@ -26,7 +26,6 @@ def test_forward():
     # Verify output matches expected pooled values
     assert np.array_equal(out, expected), f"Forward pass output incorrect: {out}"
 
-
 def test_backward():
     """
     Test the backward pass of MaxPoolLayer.

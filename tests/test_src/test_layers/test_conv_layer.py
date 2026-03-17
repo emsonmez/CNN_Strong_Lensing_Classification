@@ -34,7 +34,6 @@ def test_forward():
 
     assert output.shape == (batch, 4, expected_h, expected_w)
 
-
 def test_backward():
     """
     Test the backward pass of the ConvolutionLayer.

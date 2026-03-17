@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, Optional
+from typing import Optional
 
 
 class MaxPoolLayer:
@@ -34,6 +34,7 @@ class MaxPoolLayer:
         self.output_width: Optional[int] = None
         self.output: Optional[np.ndarray] = None
 
+    
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Compute the forward pass of the max pooling layer.

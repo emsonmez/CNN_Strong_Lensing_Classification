@@ -57,6 +57,7 @@ class ConvLayer:
         # Store input for backward pass
         self.cache_input: Optional[np.ndarray] = None
 
+    
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Compute the forward pass of the convolution layer.

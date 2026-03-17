@@ -35,8 +35,7 @@ class FlattenLayer:
         output = x.reshape(-1)
 
         return output
-
-
+    
     def backward(self, dL_dout: np.ndarray) -> np.ndarray:
         """
         Compute the backward pass of the flatten layer.
