@@ -21,7 +21,7 @@ class FlattenLayer:
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
-        Compute forward pass of the flatten layer.
+        Compute the forward pass of the flatten layer.
 
         :param x: Input tensor of shape (C, H, W)
         :type x: np.ndarray

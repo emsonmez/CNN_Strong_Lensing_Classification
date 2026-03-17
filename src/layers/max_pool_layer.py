@@ -36,7 +36,7 @@ class MaxPoolLayer:
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
-        Compute forward pass of the max pooling layer.
+        Compute the forward pass of the max pooling layer.
 
         :param x: Input tensor of shape (C, H, W)
         :type x: np.ndarray

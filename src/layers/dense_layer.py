@@ -4,7 +4,7 @@ from typing import Optional
 
 class DenseLayer:
     """
-    Fully connected layer for classification.
+    Fully (dense) connected layer for classification.
 
     Combines extracted CNN features and maps them to class probabilities.
     """
@@ -33,7 +33,7 @@ class DenseLayer:
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
-        Compute forward pass of the dense layer.
+        Compute the forward pass of the dense layer.
 
         :param x: Input vector
         :type x: np.ndarray
