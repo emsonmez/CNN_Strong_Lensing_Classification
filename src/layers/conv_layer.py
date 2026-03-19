@@ -120,6 +120,10 @@ class ConvLayer:
 
             # Compute gradient of loss w.r.t bias
             dL_dbias[i] = np.sum(dL_dout[:, i])
+        
+        # Store gradients for optimizer
+        self.dL_dweight = dL_dfilters
+        self.dL_dbias = dL_dbias
 
         # Update layer parameters
         self.weight -= lr * dL_dfilters

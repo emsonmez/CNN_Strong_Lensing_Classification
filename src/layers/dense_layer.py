@@ -87,6 +87,10 @@ class DenseLayer:
             # Compute gradient of loss w.r.t bias
             dL_dbias[i] = dL_dz[i]
 
+        # Store gradients for optimizer
+        self.dL_dweight = dL_dweight
+        self.dL_dbias = dL_dbias
+
         # Update layer parameters
         self.weight -= lr * dL_dweight
         self.bias -= lr * dL_dbias

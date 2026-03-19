@@ -10,7 +10,7 @@ class CrossEntropyLoss:
     and true class labels.
     """
 
-    def __init__(self, epsilon: float = 1e-12):
+    def __init__(self, epsilon: float = 1e-8):
         """
         Initialize loss parameters.
 
