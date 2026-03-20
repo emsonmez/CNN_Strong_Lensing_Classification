@@ -7,14 +7,15 @@ def test_forward():
     Test the forward pass of the FlattenLayer.
 
     Verify that the forward pass correctly flattens the input tensor
-    into a one-dimensional feature vector.
+    into a one-dimensional feature vector. Test for both single-image 
+    and batch inputs.
     """
 
     channels = 3
     height = 4
     width = 5
 
-    # Create random input tensor (C, H, W)
+    # ----- Single image -----
     x = np.random.randn(channels, height, width)
 
     flatten = FlattenLayer()
@@ -26,28 +27,50 @@ def test_forward():
 
     assert output.shape == (expected_size,)
 
+    # ----- Batch input -----
+    batch_size = 2
+    x_batch = np.random.randn(batch_size, channels, height, width)
+
+    output_batch = flatten.forward(x_batch)
+
+    assert output_batch.shape == (batch_size, expected_size)
+
 def test_backward():
     """
     Test the backward pass of the FlattenLayer.
 
     Verify that the backward pass reshapes the gradient back to the
-    original input tensor dimensions.
+    original input tensor dimensions. Test for both single-image 
+    and batch inputs.
     """
 
     channels = 3
     height = 4
     width = 5
 
-    # Create random input tensor
-    x = np.random.randn(channels, height, width)
+    # ----- Single image -----
+    x_single = np.random.randn(channels, height, width)
 
     flatten = FlattenLayer()
 
-    output = flatten.forward(x)
+    output_single = flatten.forward(x_single)
 
     # Random gradient coming from next layer
-    dL_dout = np.random.randn(*output.shape)
+    dL_dout = np.random.randn(*output_single.shape)
 
     dL_dinput = flatten.backward(dL_dout)
 
-    assert dL_dinput.shape == x.shape
+    assert dL_dinput.shape == x_single.shape
+
+    # ----- Batch input -----
+    batch_size = 2
+    x_batch = np.random.randn(batch_size, channels, height, width)
+
+    flatten = FlattenLayer()
+    output_batch = flatten.forward(x_batch)
+
+    # Random gradient coming from next layer
+    dL_dout_batch = np.random.randn(*output_batch.shape)
+    dL_dinput_batch = flatten.backward(dL_dout_batch)
+
+    assert dL_dinput_batch.shape == x_batch.shape

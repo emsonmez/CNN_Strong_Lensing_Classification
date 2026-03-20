@@ -1,5 +1,5 @@
 import numpy as np
-from src.layers.activation_layer import LeakyReLULayer
+from src.layers.activation_layer import ActivationLayer
 
 
 def test_forward():
@@ -15,7 +15,7 @@ def test_forward():
                    [3.0, -4.0]]])
 
     # Initialize activation layer
-    relu = LeakyReLULayer(alpha=0.01)
+    relu = ActivationLayer(alpha=0.01)
 
     output = relu.forward(x)
 
@@ -37,7 +37,7 @@ def test_backward():
     x = np.array([[[-1.0, 2.0],
                    [3.0, -4.0]]])
 
-    relu = LeakyReLULayer(alpha=0.01)
+    relu = ActivationLayer(alpha=0.01)
 
     # Run forward pass to cache input
     relu.forward(x)

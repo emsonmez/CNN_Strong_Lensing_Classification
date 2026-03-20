@@ -4,9 +4,10 @@ from typing import Optional
 
 class AdamOptimizer:
     """
-    Adaptive Moment Estimation(ADAM) optimizer.
+    Adaptive Moment Estimation (ADAM) optimizer.
 
-    Uses adaptive moment estimation for parameter updates.
+    Uses a stochastic adaptive moment estimation 
+    for parameter updates.
     """
 
     def __init__(
@@ -36,6 +37,7 @@ class AdamOptimizer:
         self.beta2 = beta2
         self.epsilon = epsilon
 
+        # Timestep and (First and Second) Moment Vectors
         self.m = {}
         self.v = {}
         self.t = 0

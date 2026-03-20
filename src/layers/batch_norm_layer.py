@@ -44,29 +44,36 @@ class BatchNormLayer:
         :rtype: np.ndarray
         """
 
-        self.cache_input = x
-        C, H, W = x.shape
+        single_image = False
+        if x.ndim == 3:  # Add batch dimension for single image
+            x = x[np.newaxis, :, :, :]
+            single_image = True
+        self.cache_input = x  # store input for backward pass
+        self.single_image = single_image
+
+
+        self.batch_size, self.num_channels, self.input_height, self.input_width = x.shape
 
         output = np.zeros_like(x)
 
         # Compute per-channel mean and variance
-        self.mean = np.zeros(C)
-        self.variance = np.zeros(C)
+        self.mean = np.zeros(self.num_channels)
+        self.variance = np.zeros(self.num_channels)
         self.x_hat = np.zeros_like(x)
 
-        for c in range(C):
+        for c in range(self.num_channels):
 
             # Empirical mean and variance over spatial dimensions
-            self.mean[c] = np.mean(x[c])
-            self.variance[c] = np.var(x[c])
+            self.mean[c] = np.mean(x[:, c, :, :])
+            self.variance[c] = np.var(x[:, c, :, :])
 
             # Normalize
-            self.x_hat[c] = (x[c] - self.mean[c]) / np.sqrt(self.variance[c] + self.epsilon)
+            self.x_hat[:, c, :, :] = (x[:, c, :, :] - self.mean[c]) / np.sqrt(self.variance[c] + self.epsilon)
 
             # Scale and shift
-            output[c] = self.gamma[c] * self.x_hat[c] + self.beta[c]
+            output[:, c, :, :] = self.gamma[c] * self.x_hat[:, c, :, :] + self.beta[c]
 
-        return output
+        return output[0] if self.single_image else output
     
     def backward(self, dL_dout: np.ndarray, lr: float) -> np.ndarray:
         """
@@ -81,27 +88,33 @@ class BatchNormLayer:
         """
 
         x = self.cache_input
-        C, H, W = x.shape
+        
+        if self.single_image:
+            dL_dout = dL_dout[np.newaxis, :, :, :]
+
+        self.batch_size, self.num_channels, self.input_height, self.input_width = x.shape
+
+        # Total number of elements per channel 
+        N = self.batch_size * self.input_height * self.input_width
 
         # Initialize gradients
         dL_dinput = np.zeros_like(x)
         dL_dgamma = np.zeros_like(self.gamma)
         dL_dbeta = np.zeros_like(self.beta)
 
-        for c in range(C):
 
-            N = H * W  # number of elements per channel
+        for c in range(self.num_channels):
 
-            # Step 1: gradients w.r.t gamma and beta
-            dL_dgamma[c] = np.sum(dL_dout[c] * self.x_hat[c])
-            dL_dbeta[c] = np.sum(dL_dout[c])
+          # Step 1: gradients w.r.t gamma and beta
+            dL_dgamma[c] = np.sum(dL_dout[:, c, :, :] * self.x_hat[:, c, :, :])
+            dL_dbeta[c] = np.sum(dL_dout[:, c, :, :])
 
             # Step 2: gradient w.r.t normalized input
-            dL_dxhat = dL_dout[c] * self.gamma[c]
+            dL_dxhat = dL_dout[:, c, :, :] * self.gamma[c]
 
             # Step 3: gradient w.r.t variance
             dL_dvar = np.sum(
-            dL_dxhat * (x[c] - self.mean[c]) *
+            dL_dxhat * (x[:, c, :, :] - self.mean[c]) *
             (-0.5) * (self.variance[c] + self.epsilon) ** (-1.5)
             )
 
@@ -110,21 +123,19 @@ class BatchNormLayer:
             np.sum(
                 dL_dxhat * (-1 / np.sqrt(self.variance[c] + self.epsilon))
             )
-            + dL_dvar * (1 / N) * np.sum(-2 * (x[c] - self.mean[c]))
+            + dL_dvar * (1 / N) * np.sum(-2 * (x[:, c, :, :] - self.mean[c]))
             )
 
             # Step 5: gradient w.r.t input
-            for i in range(H):
-                for j in range(W):
-                    dL_dinput[c, i, j] = (
-                        dL_dxhat[i, j] * (1 / np.sqrt(self.variance[c] + self.epsilon))
-                        + dL_dvar * (2 * (x[c, i, j] - self.mean[c]) / N)
-                        + dL_dmean * (1 / N)
-                    )
+            dL_dinput[:, c, :, :] = (
+                dL_dxhat * (1 / np.sqrt(self.variance[c] + self.epsilon))
+                + dL_dvar * (2 * (x[:, c, :, :] - self.mean[c]) / N)
+                + dL_dmean * (1 / N)
+            )
 
         # Update parameters
         self.gamma -= lr * dL_dgamma
         self.beta -= lr * dL_dbeta
 
-        return dL_dinput
+        return dL_dinput[0] if self.single_image else dL_dinput
 

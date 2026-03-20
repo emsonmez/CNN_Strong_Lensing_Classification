@@ -45,33 +45,46 @@ class MaxPoolLayer:
         :rtype: np.ndarray
         """
 
+        single_image = False
+        if x.ndim == 3:  # Add batch dimension for single image
+            x = x[np.newaxis, :, :, :]
+            single_image = True
         self.cache_input = x  # store input for backward pass
-        self.num_channels, self.input_height, self.input_width = x.shape
+        self.single_image = single_image
+
+        self.batch_size, self.num_channels, self.input_height, self.input_width = x.shape
 
         # Compute output spatial dimensions
         self.output_height = self.input_height // self.pool_size
         self.output_width = self.input_width // self.pool_size
 
-        self.output = np.zeros((self.num_channels, self.output_height, self.output_width))
+        self.output = np.zeros((
+            self.batch_size,
+            self.num_channels,
+            self.output_height,
+            self.output_width
+        ))
 
         # Loop over channels and output positions
-        for c in range(self.num_channels):
-            for i in range(self.output_height):
-                for j in range(self.output_width):
+        # TO DO: Vectorize this 
+        for n in range(self.batch_size):
+            for c in range(self.num_channels):
+                for i in range(self.output_height):
+                    for j in range(self.output_width):
 
-                    # Calculate window boundaries
-                    start_i = i * self.pool_size
-                    end_i = start_i + self.pool_size
-                    start_j = j * self.pool_size
-                    end_j = start_j + self.pool_size
+                        # Calculate window boundaries
+                        start_i = i * self.pool_size
+                        end_i = start_i + self.pool_size
+                        start_j = j * self.pool_size
+                        end_j = start_j + self.pool_size
 
-                    # Extract the patch from input
-                    patch = x[c, start_i:end_i, start_j:end_j]
+                        # Extract the patch from input
+                        patch = x[n, c, start_i:end_i, start_j:end_j]
 
-                    # Assign the maximum value in the patch to output
-                    self.output[c, i, j] = np.max(patch)
+                        # Assign the maximum value in the patch to output
+                        self.output[n, c, i, j] = np.max(patch)
 
-        return self.output
+        return self.output[0] if self.single_image else self.output 
     
     def backward(self, dL_dout: np.ndarray) -> np.ndarray:
         """
@@ -83,26 +96,36 @@ class MaxPoolLayer:
         :rtype: np.ndarray
         """
 
-        # Initialize gradient array w.r.t input
+        x = self.cache_input
+
+        # Ensure dL_dout is also 4D
+        if self.single_image:
+            dL_dout = dL_dout[np.newaxis, :, :, :]
+        
+        self.batch_size, self.num_channels, self.input_height, self.input_width = x.shape
+
+         # Initialize gradient array w.r.t input
         dL_dinput = np.zeros_like(self.cache_input)
         
-        for c in range(self.num_channels):
-            for i in range(self.output_height):
-                for j in range(self.output_width):
+        # TO DO: Vectorize this 
+        for n in range(self.batch_size):
+            for c in range(self.num_channels):
+                for i in range(self.output_height):
+                    for j in range(self.output_width):
 
-                    start_i = i * self.pool_size
-                    end_i = start_i + self.pool_size
-                    start_j = j * self.pool_size
-                    end_j = start_j + self.pool_size
+                        start_i = i * self.pool_size
+                        end_i = start_i + self.pool_size
+                        start_j = j * self.pool_size
+                        end_j = start_j + self.pool_size
 
-                    patch = self.cache_input[c, start_i:end_i, start_j:end_j]
+                        patch = self.cache_input[n, c, start_i:end_i, start_j:end_j]
 
-                    # Find max value index in the patch
-                    max_idx = np.unravel_index(np.argmax(patch), patch.shape)
+                        # Find max value index in the patch
+                        max_idx = np.unravel_index(np.argmax(patch), patch.shape)
 
-                    # Route gradient from output to max element
-                    dL_dinput[c,
-                            start_i + max_idx[0],
-                            start_j + max_idx[1]] += dL_dout[c, i, j]
+                        # Route gradient from output to max element
+                        dL_dinput[n, c,
+                                start_i + max_idx[0],
+                                start_j + max_idx[1]] += dL_dout[n, c, i, j]
 
-        return dL_dinput
+        return dL_dinput[0] if self.single_image else dL_dinput

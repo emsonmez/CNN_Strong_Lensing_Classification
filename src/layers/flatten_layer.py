@@ -29,12 +29,17 @@ class FlattenLayer:
         :rtype: np.ndarray
         """
 
+        self.single_image = False
+        if x.ndim == 3:
+            x = x[np.newaxis, ...] 
+            self.single_image = True
+
         self.cache_input_shape = x.shape
 
-        # Flatten tensor into 1D vector
-        output = x.reshape(-1)
+        # Flatten all dimensions except batch
+        output = x.reshape(x.shape[0], -1)
 
-        return output
+        return output[0] if self.single_image else output
     
     def backward(self, dL_dout: np.ndarray) -> np.ndarray:
         """
@@ -46,7 +51,10 @@ class FlattenLayer:
         :rtype: np.ndarray
         """
 
+        if self.single_image:
+            dL_dout = dL_dout[np.newaxis, ...]
+
         # Reshape gradient back to original tensor shape
         dL_dinput = dL_dout.reshape(self.cache_input_shape)
 
-        return dL_dinput
+        return dL_dinput[0] if self.single_image else dL_dinput

@@ -1,7 +1,7 @@
 import numpy as np 
 from typing import Optional
 
-class LeakyReLULayer:
+class ActivationLayer:
     """
     Leaky ReLU activation layer.
 
