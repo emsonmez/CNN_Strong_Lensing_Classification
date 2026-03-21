@@ -1,11 +1,11 @@
-name: Codecov
+name: CI
 
 on:
   push:
   pull_request:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -32,9 +32,10 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=./ --cov-report=xml --cov-report=term
+          pytest --cov=. --cov-report=xml --cov-report=term
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage & test results to Codecov
+        if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           files: ./coverage.xml

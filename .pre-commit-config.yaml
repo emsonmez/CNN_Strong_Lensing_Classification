@@ -66,5 +66,5 @@ repos:
     hooks:
       - id: pip-audit
 
-# TODO: Docstring Formatter doesn't take Python 3.14, only previous versions
-# TODO: Maybe add pyright
+  # TODO: Docstring Formatter (docformatter) doesn't support Python 3.14, only previous versions
+  # TODO: Maybe add pyright

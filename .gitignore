@@ -11,5 +11,6 @@ __pycache__/
 .coverage
 .coverage.*
 coverage.xml
+junit.xml
 htmlcov/
 uv.lock
