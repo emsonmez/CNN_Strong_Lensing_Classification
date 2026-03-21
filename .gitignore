@@ -5,3 +5,8 @@ __pycache__/
 .log
 .vscode/
 .env
+
+# Unit Tests & Coverage Reports
+.coverage
+.coverage.*
+coverage.xml
