@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.layers.activation_layer import ActivationLayer
 
 

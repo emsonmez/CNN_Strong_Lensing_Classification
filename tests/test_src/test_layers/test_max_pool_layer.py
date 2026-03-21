@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.layers.max_pool_layer import MaxPoolLayer
 
 

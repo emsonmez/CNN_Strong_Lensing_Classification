@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.layers.conv_layer import ConvLayer
 
 

@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.layers.dropout_layer import DropoutLayer
 
 

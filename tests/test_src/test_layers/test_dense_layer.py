@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.layers.dense_layer import DenseLayer
 
 

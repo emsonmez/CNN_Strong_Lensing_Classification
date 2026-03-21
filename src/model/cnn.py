@@ -1,11 +1,9 @@
 from typing import List
-
 import numpy as np
 
+# Imnporting all layers
 from src.layers.activation_layer import ActivationLayer
 from src.layers.batch_norm_layer import BatchNormLayer
-
-# Imnporting all layers
 from src.layers.conv_layer import ConvLayer
 from src.layers.dense_layer import DenseLayer
 from src.layers.dropout_layer import DropoutLayer

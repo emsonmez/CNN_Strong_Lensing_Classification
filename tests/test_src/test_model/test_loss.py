@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.model.loss import CrossEntropyLoss
 
 

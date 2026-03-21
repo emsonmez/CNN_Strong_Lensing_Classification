@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.model.optimizer import AdamOptimizer
 
 

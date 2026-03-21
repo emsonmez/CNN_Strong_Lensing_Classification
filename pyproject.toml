@@ -24,7 +24,7 @@ line-length = 88
 target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]  # Errors, Pyflakes, Import sorting
+select = ["E", "F"]  # Errors, Pyflakes
 fixable = ["ALL"]
 
 # Black configuration

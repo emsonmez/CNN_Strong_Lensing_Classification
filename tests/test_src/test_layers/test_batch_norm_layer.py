@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.layers.batch_norm_layer import BatchNormLayer
 
 

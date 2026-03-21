@@ -24,30 +24,19 @@ repos:
       - id: trailing-whitespace
       - id: check-merge-conflict
 
-  # Ruff (lint + fix)
+  # 2. Python linting & formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.7.1
     hooks:
       - id: ruff
-        args: []
-      - id: ruff-format
+        args: [--fix]
 
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.5.4
-    hooks:
-      - id: uv-lock
-
-  # TODO: Add pyright, prettier
-
-  # Black (formatting)
   - repo: https://github.com/psf/black
     rev: 24.4.2
     hooks:
       - id: black
-        args: [--check]
-        language_version: python3
 
-  # Jupyter Notebook support
+  # 2.1: Jupyter support
   - repo: https://github.com/nbQA-dev/nbQA
     rev: 1.9.1
     hooks:
@@ -59,4 +48,23 @@ repos:
       - id: black-jupyter
         language_version: python3
 
+  # 3. Dependency safety / lock file checks
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.5.4
+    hooks:
+      - id: uv-lock
+
+  # 4. Security over secrets (API keys, tokens, passwords)
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.0
+    hooks:
+      - id: gitleaks
+
+  # 5: Scans dependencies for known vulnerabilities
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.8.0
+    hooks:
+      - id: pip-audit
+
 # TODO: Docstring Formatter doesn't take Python 3.14, only previous versions
+# TODO: Maybe add pyright
