@@ -1,0 +1,54 @@
+ci:
+  autofix_commit_msg: |
+    Autofix formatting from pre-commit hooks
+
+  autofix_prs: true
+  autoupdate_branch: ""
+  autoupdate_commit_msg: "[pre-commit.ci] autoupdate"
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
+
+default_language_version:
+  python: python3.12
+
+repos:
+  # General sanity checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+
+  # Ruff (lint + fix)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.5
+    hooks:
+      - id: ruff
+        args: ["--fix"] 
+      - id: ruff-format
+
+  # Black (formatting)
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+
+  # Jupyter Notebook support
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.9.1
+    hooks:
+      - id: nbqa-ruff
+        args: ["--fix"]
+      - id: nbqa-black
+
+  # Docstring formatting
+  - repo: https://github.com/PyCQA/docformatter
+    rev: v1.7.5
+    hooks:
+      - id: docformatter
+        args: ["--in-place"]
