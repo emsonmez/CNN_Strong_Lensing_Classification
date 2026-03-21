@@ -66,7 +66,7 @@ class MaxPoolLayer:
         ))
 
         # Loop over channels and output positions
-        # TO DO: Vectorize this 
+        # TODO: Vectorize this 
         for n in range(self.batch_size):
             for c in range(self.num_channels):
                 for i in range(self.output_height):
@@ -107,7 +107,7 @@ class MaxPoolLayer:
          # Initialize gradient array w.r.t input
         dL_dinput = np.zeros_like(self.cache_input)
         
-        # TO DO: Vectorize this 
+        # TODO: Vectorize this 
         for n in range(self.batch_size):
             for c in range(self.num_channels):
                 for i in range(self.output_height):

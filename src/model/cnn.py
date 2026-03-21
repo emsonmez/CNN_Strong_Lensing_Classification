@@ -46,7 +46,7 @@ class CNNModel:
 
             # Dense Block
             DenseLayer(input_size=32 * 26 * 26, output_size=128), 
-            # TO DO: Add BatchNorm1DLayer instead of BatchNormLayer
+            # TODO: Add BatchNorm1DLayer(num_channels=128) instead of BatchNormLayer
             ActivationLayer(alpha=0.01),
             DropoutLayer(dropout_rate=0.15),
 

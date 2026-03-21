@@ -1,0 +1,36 @@
+name: Upload coverage reports to Codecov
+    uses: codecov/codecov-action@v5
+    with:
+      token: ${{ secrets.CODECOV_TOKEN }}
+      slug: emsonmez/CNN_Strong_Lensing_Classification
+
+codecov: {}
+
+comment:
+  layout: "reach,diff,flags,files,footer"
+  require_changes: false
+  require_base: false
+  require_head: true
+
+coverage:
+  status:
+    patch:
+      default:
+        paths:
+          - (?s:src/[^\/]*)\Z
+        target: 97.5
+        threshold: 0.5
+    project:
+      default:
+        paths:
+          - (?s:src/[^\/]*)\Z
+        target: 97.5
+        threshold: 0.5
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: true
+      loop: true
+      macro: false
+      method: false
