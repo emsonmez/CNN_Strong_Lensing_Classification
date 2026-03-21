@@ -30,3 +30,11 @@ jobs:
       - name: Run pre-commit
         run: |
           pre-commit run --all-files
+
+      - name: Check uv lockfile # STRICT
+        run: |
+          uv lock --check
+
+      - name: Run pip-audit # STRICT
+        run: |
+          pip-audit

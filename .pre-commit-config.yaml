@@ -53,6 +53,8 @@ repos:
     rev: 0.5.4
     hooks:
       - id: uv-lock
+        args: [--locked]
+        stages: [push]   # still runs in pre-commit.ci
 
   # 4. Security over secrets (API keys, tokens, passwords)
   - repo: https://github.com/gitleaks/gitleaks
@@ -60,11 +62,16 @@ repos:
     hooks:
       - id: gitleaks
 
-  # 5: Scans dependencies for known vulnerabilities
-  - repo: https://github.com/pypa/pip-audit
-    rev: v2.8.0
+  # 5: Scans dependencies for known vulnerabilities (CI safe mode)
+  - repo: local
     hooks:
       - id: pip-audit
+        name: pip-audit (lightweight)
+        entry: python -m pip_audit -r requirements.txt
+        language: python
+        additional_dependencies: [pip-audit]
+        pass_filenames: false
+        stages: [push]
 
   # TODO: Docstring Formatter (docformatter) doesn't support Python 3.14, only previous versions
   # TODO: Maybe add pyright

@@ -1,6 +1,7 @@
 numpy
-pytest
-pytest-cov
 scipy
 matplotlib
 jupyter
+pytest
+pytest-cov
+pyswip

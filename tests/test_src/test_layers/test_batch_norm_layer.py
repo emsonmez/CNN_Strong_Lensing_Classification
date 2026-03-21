@@ -18,19 +18,30 @@ def test_forward():
     # Initialize batch normalization layer
     bn = BatchNormLayer(num_channels=channels)
 
-    # ----- Single image -----
+    # ----- Conv: Single image -----
     x_single = np.random.randn(channels, height, width)
 
-    # Perform and vertify forward pass
-    output_single = bn.forward(x_single)
+    output_single = bn.forward(x_single)  # Perform and vertify forward pass
     assert output_single.shape == x_single.shape
 
-    # ----- Batch input -----
+    # ----- Conv: Batch input -----
     batch_size = 2
     x_batch = np.random.randn(batch_size, channels, height, width)
 
     output_batch = bn.forward(x_batch)
     assert output_batch.shape == x_batch.shape
+
+    # ----- Dense: Single sample -----
+    x_single_dense = np.random.randn(channels)
+
+    output_single_dense = bn.forward(x_single_dense)
+    assert output_single_dense.shape == x_single_dense.shape
+
+    # ----- Dense: Batch input -----
+    x_batch_dense = np.random.randn(batch_size, channels)
+
+    output_batch_dense = bn.forward(x_batch_dense)
+    assert output_batch_dense.shape == x_batch_dense.shape
 
 
 def test_backward():
@@ -49,7 +60,7 @@ def test_backward():
 
     bn = BatchNormLayer(num_channels=channels)
 
-    # ----- Single image -----
+    # ----- Conv: Single image -----
     x_single = np.random.randn(channels, height, width)
 
     output_single = bn.forward(x_single)
@@ -60,7 +71,7 @@ def test_backward():
 
     assert dL_dinput_single.shape == x_single.shape
 
-    # ----- Batch input -----
+    # ----- Conv: Batch input -----
     batch_size = 2
     x_batch = np.random.randn(batch_size, channels, height, width)
 
@@ -74,5 +85,30 @@ def test_backward():
     dL_dinput_batch = bn.backward(dL_dout_batch, lr=0.01)
 
     assert dL_dinput_batch.shape == x_batch.shape
+    assert not np.allclose(gamma_before, bn.gamma)
+    assert not np.allclose(beta_before, bn.beta)
+
+    # ----- Dense: Single sample -----
+    x_single_dense = np.random.randn(channels)
+
+    output_single_dense = bn.forward(x_single_dense)
+
+    dL_dout_single_dense = np.random.randn(*output_single_dense.shape)
+    dL_dinput_single_dense = bn.backward(dL_dout_single_dense, lr=0.01)
+
+    assert dL_dinput_single_dense.shape == x_single_dense.shape
+
+    # ----- Dense: Batch input -----
+    x_batch_dense = np.random.randn(batch_size, channels)
+
+    output_batch_dense = bn.forward(x_batch_dense)
+
+    gamma_before = bn.gamma.copy()
+    beta_before = bn.beta.copy()
+
+    dL_dout_batch_dense = np.random.randn(*output_batch_dense.shape)
+    dL_dinput_batch_dense = bn.backward(dL_dout_batch_dense, lr=0.01)
+
+    assert dL_dinput_batch_dense.shape == x_batch_dense.shape
     assert not np.allclose(gamma_before, bn.gamma)
     assert not np.allclose(beta_before, bn.beta)

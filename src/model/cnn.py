@@ -34,7 +34,7 @@ class CNNModel:
             BatchNormLayer(num_channels=16),
             ActivationLayer(alpha=0.01),
             MaxPoolLayer(pool_size=2, stride=2),
-            # Third Conv (no pooling to avoid overfitting)
+            # Third Conv Block (no pooling to avoid overfitting)
             ConvLayer(in_channels=16, out_channels=32, kernel_size=(3, 3)),
             BatchNormLayer(num_channels=32),
             ActivationLayer(alpha=0.01),
@@ -42,7 +42,7 @@ class CNNModel:
             FlattenLayer(),
             # Dense Block
             DenseLayer(input_size=32 * 26 * 26, output_size=128),
-            # TODO: Add BatchNorm1DLayer(num_channels=128) instead of BatchNormLayer
+            BatchNormLayer(num_channels=128),
             ActivationLayer(alpha=0.01),
             DropoutLayer(dropout_rate=0.15),
             # Output Layer
