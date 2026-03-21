@@ -29,8 +29,7 @@ repos:
     rev: v0.7.1
     hooks:
       - id: ruff
-        args: [--fix]
-        types: [python]
+        args: []
       - id: ruff-format
 
   - repo: https://github.com/astral-sh/uv-pre-commit
@@ -38,13 +37,14 @@ repos:
     hooks:
       - id: uv-lock
 
-  # TODO: Add pyright
+  # TODO: Add pyright, prettier
 
   # Black (formatting)
   - repo: https://github.com/psf/black
     rev: 24.4.2
     hooks:
       - id: black
+        args: [--check]
         language_version: python3
 
   # Jupyter Notebook support
