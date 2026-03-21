@@ -1,12 +1,11 @@
 import numpy as np
-from typing import Optional
 
 
 class AdamOptimizer:
     """
     Adaptive Moment Estimation (ADAM) optimizer.
 
-    Uses a stochastic adaptive moment estimation 
+    Uses a stochastic adaptive moment estimation
     for parameter updates.
     """
 
@@ -15,11 +14,11 @@ class AdamOptimizer:
         lr: float = 0.001,
         beta1: float = 0.9,
         beta2: float = 0.999,
-        epsilon: float = 1e-8
+        epsilon: float = 1e-8,
     ):
         """
-        Initialize ADAM parameters according to 
-        the proposed values in Kingma & Ba (2015): 
+        Initialize ADAM parameters according to
+        the proposed values in Kingma & Ba (2015):
         DOI: 10.48550/arXiv.1412.6980.
 
         :param lr: Learning rate (α)
@@ -42,7 +41,6 @@ class AdamOptimizer:
         self.v = {}
         self.t = 0
 
-
     def step(self, layers: list) -> None:
         """
         Compute the ADAM update step.
@@ -54,7 +52,6 @@ class AdamOptimizer:
         self.t += 1
 
         for idx, layer in enumerate(layers):
-
             if not hasattr(layer, "dL_dweight"):
                 continue
 
@@ -62,11 +59,11 @@ class AdamOptimizer:
             if idx not in self.m:
                 self.m[idx] = {
                     "w": np.zeros_like(layer.weight),
-                    "b": np.zeros_like(layer.bias)
+                    "b": np.zeros_like(layer.bias),
                 }
                 self.v[idx] = {
                     "w": np.zeros_like(layer.weight),
-                    "b": np.zeros_like(layer.bias)
+                    "b": np.zeros_like(layer.bias),
                 }
 
             # Gradients
@@ -78,15 +75,19 @@ class AdamOptimizer:
             self.m[idx]["b"] = self.beta1 * self.m[idx]["b"] + (1 - self.beta1) * g_b
 
             # Second moment
-            self.v[idx]["w"] = self.beta2 * self.v[idx]["w"] + (1 - self.beta2) * (g_w ** 2)
-            self.v[idx]["b"] = self.beta2 * self.v[idx]["b"] + (1 - self.beta2) * (g_b ** 2)
+            self.v[idx]["w"] = self.beta2 * self.v[idx]["w"] + (1 - self.beta2) * (
+                g_w**2
+            )
+            self.v[idx]["b"] = self.beta2 * self.v[idx]["b"] + (1 - self.beta2) * (
+                g_b**2
+            )
 
             # Bias correction
-            m_hat_w = self.m[idx]["w"] / (1 - self.beta1 ** self.t)
-            v_hat_w = self.v[idx]["w"] / (1 - self.beta2 ** self.t)
+            m_hat_w = self.m[idx]["w"] / (1 - self.beta1**self.t)
+            v_hat_w = self.v[idx]["w"] / (1 - self.beta2**self.t)
 
-            m_hat_b = self.m[idx]["b"] / (1 - self.beta1 ** self.t)
-            v_hat_b = self.v[idx]["b"] / (1 - self.beta2 ** self.t)
+            m_hat_b = self.m[idx]["b"] / (1 - self.beta1**self.t)
+            v_hat_b = self.v[idx]["b"] / (1 - self.beta2**self.t)
 
             # Update rule
             layer.weight -= self.lr * m_hat_w / (np.sqrt(v_hat_w) + self.epsilon)

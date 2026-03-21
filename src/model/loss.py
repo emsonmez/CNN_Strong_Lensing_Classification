@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Optional
+
+import numpy as np
 
 
 class CrossEntropyLoss:
@@ -23,7 +24,6 @@ class CrossEntropyLoss:
         # Stored for backward pass
         self.y_true: Optional[np.ndarray] = None
         self.y_pred: Optional[np.ndarray] = None
-
 
     def forward(self, y_pred: np.ndarray, y_true: np.ndarray) -> float:
         """

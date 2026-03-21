@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.layers.conv_layer import ConvLayer
 
 
@@ -19,11 +20,7 @@ def test_forward():
 
     # Initialize convolutional layer
     conv = ConvLayer(
-        in_channels=3,
-        out_channels=4,
-        kernel_size=(3, 3),
-        stride=1,
-        padding=0
+        in_channels=3, out_channels=4, kernel_size=(3, 3), stride=1, padding=0
     )
 
     output = conv.forward(x)
@@ -33,6 +30,7 @@ def test_forward():
     expected_w = width - 3 + 1
 
     assert output.shape == (batch, 4, expected_h, expected_w)
+
 
 def test_backward():
     """
@@ -49,11 +47,7 @@ def test_backward():
     x = np.random.randn(batch, in_channels, height, width)
 
     conv = ConvLayer(
-        in_channels=3,
-        out_channels=4,
-        kernel_size=(3, 3),
-        stride=1,
-        padding=0
+        in_channels=3, out_channels=4, kernel_size=(3, 3), stride=1, padding=0
     )
 
     output = conv.forward(x)

@@ -1,4 +1,5 @@
-import numpy as np 
+import numpy as np
+
 from src.layers.flatten_layer import FlattenLayer
 
 
@@ -7,7 +8,7 @@ def test_forward():
     Test the forward pass of the FlattenLayer.
 
     Verify that the forward pass correctly flattens the input tensor
-    into a one-dimensional feature vector. Test for both single-image 
+    into a one-dimensional feature vector. Test for both single-image
     and batch inputs.
     """
 
@@ -35,12 +36,13 @@ def test_forward():
 
     assert output_batch.shape == (batch_size, expected_size)
 
+
 def test_backward():
     """
     Test the backward pass of the FlattenLayer.
 
     Verify that the backward pass reshapes the gradient back to the
-    original input tensor dimensions. Test for both single-image 
+    original input tensor dimensions. Test for both single-image
     and batch inputs.
     """
 

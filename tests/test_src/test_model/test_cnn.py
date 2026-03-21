@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.model.cnn import CNNModel
 
 
@@ -18,7 +19,8 @@ def test_forward():
     # Forward pass
     output = model.forward(x, training=True)
 
-    assert output.shape == (1,7), f"Unexpected output shape: {output.shape}"
+    assert output.shape == (1, 7), f"Unexpected output shape: {output.shape}"
+
 
 def test_backward():
     """

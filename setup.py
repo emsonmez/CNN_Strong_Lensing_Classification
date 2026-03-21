@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="CNN_Strong_Lensing_Classification",
@@ -6,9 +6,7 @@ setup(
     description="",
     author="Emrecan Michael Sonmez",
     packages=find_packages(),
-
     python_requires=">=3.10",
-
     install_requires=[
         "numpy",
         "scipy",
@@ -16,9 +14,8 @@ setup(
         "jupyter",
         "pytest",
         "pytest-cov",
-        "pyswip"
+        "pyswip",
     ],
-
     extras_require={
         "dev": [
             "black",
@@ -26,6 +23,5 @@ setup(
             "mypy",
         ]
     },
-
     include_package_data=True,
 )

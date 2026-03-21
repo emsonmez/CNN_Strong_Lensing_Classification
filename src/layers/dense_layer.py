@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Optional
+
+import numpy as np
 
 
 class DenseLayer:
@@ -31,7 +32,6 @@ class DenseLayer:
         self.cache_input: Optional[np.ndarray] = None
         self.output: Optional[np.ndarray] = None
 
-
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Compute the forward pass of the dense layer.
@@ -47,15 +47,17 @@ class DenseLayer:
         self.cache_input = x
 
         # Linear transformation
-        z = x @ self.weight.T + self.bias   # (N, output_size)
+        z = x @ self.weight.T + self.bias  # (N, output_size)
 
         # Softmax non-linear activation function
-        z_shifted = z - np.max(z, axis=1, keepdims=True) # Shift input values for numerical stability 
+        z_shifted = z - np.max(
+            z, axis=1, keepdims=True
+        )  # Shift input values for numerical stability
         exp_z = np.exp(z_shifted)
         self.output = exp_z / np.sum(exp_z, axis=1, keepdims=True)
 
         return self.output
-    
+
     def backward(self, dL_dout: np.ndarray, lr: float) -> np.ndarray:
         """
         Compute the backward pass of the dense layer.
@@ -79,9 +81,9 @@ class DenseLayer:
         N = x.shape[0]
 
         # Initialize gradients
-        dL_dweight = dL_dz.T @ x        # (output_size, input_size)
+        dL_dweight = dL_dz.T @ x  # (output_size, input_size)
         dL_dbias = np.sum(dL_dz, axis=0)  # (output_size,)
-        dL_dinput = dL_dz @ self.weight   # (N, input_size)
+        dL_dinput = dL_dz @ self.weight  # (N, input_size)
 
         # Average over batch
         dL_dweight /= N

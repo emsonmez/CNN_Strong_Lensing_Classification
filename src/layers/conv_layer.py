@@ -1,6 +1,7 @@
+from typing import Optional, Tuple
+
 import numpy as np
 from scipy.signal import correlate2d
-from typing import Optional, Tuple
 
 
 class ConvLayer:
@@ -17,7 +18,7 @@ class ConvLayer:
         out_channels: int,
         kernel_size: Tuple[int, int],
         stride: int = 1,
-        padding: int = 0
+        padding: int = 0,
     ):
         """
         Initialize convolution layer parameters.
@@ -44,12 +45,7 @@ class ConvLayer:
 
         # He-style initialization for weights
         scale = np.sqrt(2.0 / (in_channels * k_h * k_w))
-        self.weight = np.random.randn(
-            out_channels,
-            in_channels,
-            k_h,
-            k_w
-        ) * scale
+        self.weight = np.random.randn(out_channels, in_channels, k_h, k_w) * scale
 
         # Bias initialized to zeros
         self.bias = np.zeros(out_channels)
@@ -57,7 +53,6 @@ class ConvLayer:
         # Store input for backward pass
         self.cache_input: Optional[np.ndarray] = None
 
-    
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Compute the forward pass of the convolution layer.
@@ -68,7 +63,7 @@ class ConvLayer:
         :rtype: np.ndarray
         """
 
-        self.cache_input = x # Store input for backward
+        self.cache_input = x  # Store input for backward
 
         N, C_in, H, W = x.shape
         k_h, k_w = self.kernel_size
@@ -97,30 +92,23 @@ class ConvLayer:
         x = self.cache_input
 
         # Initialize gradients
-        dL_dinput = np.zeros_like(x) # gradient w.r.t input
-        dL_dfilters = np.zeros_like(self.weight) # gradient w.r.t weights
-        dL_dbias = np.zeros_like(self.bias) # gradient w.r.t bias
+        dL_dinput = np.zeros_like(x)  # gradient w.r.t input
+        dL_dfilters = np.zeros_like(self.weight)  # gradient w.r.t weights
+        dL_dbias = np.zeros_like(self.bias)  # gradient w.r.t bias
 
         # Loop over output channels
         for i in range(self.out_channels):
-
             # Compute gradient of loss w.r.t current filter
-            dL_dfilters[i] = correlate2d(
-                x[0, 0],
-                dL_dout[0, i],
-                mode="valid"
-            )
+            dL_dfilters[i] = correlate2d(x[0, 0], dL_dout[0, i], mode="valid")
 
             # Compute gradient of loss w.r.t input
             dL_dinput[0, 0] += correlate2d(
-                dL_dout[0, i],
-                self.weight[i, 0],
-                mode="full"
+                dL_dout[0, i], self.weight[i, 0], mode="full"
             )
 
             # Compute gradient of loss w.r.t bias
             dL_dbias[i] = np.sum(dL_dout[:, i])
-        
+
         # Store gradients for optimizer
         self.dL_dweight = dL_dfilters
         self.dL_dbias = dL_dbias

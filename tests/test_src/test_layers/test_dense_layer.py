@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.layers.dense_layer import DenseLayer
 
 
@@ -7,7 +8,7 @@ def test_forward():
     Test the forward pass of the DenseLayer.
 
     Verify that the forward pass produces an output vector of the expected size
-    and that the softmax probabilities sum to one. Test for both single-image 
+    and that the softmax probabilities sum to one. Test for both single-image
     and batch inputs.
     """
 
@@ -15,10 +16,7 @@ def test_forward():
     output_size = 3
 
     # Initialize dense layer
-    dense = DenseLayer(
-        input_size=input_size,
-        output_size=output_size
-    )
+    dense = DenseLayer(input_size=input_size, output_size=output_size)
 
     # ----- Single image -----
     x_single = np.random.randn(input_size)
@@ -49,22 +47,23 @@ def test_backward():
     Test the backward pass of the DenseLayer.
 
     Verify that the backward pass returns a gradient vector with the same
-    shape as the input and that the layer parameters are updated. Test 
+    shape as the input and that the layer parameters are updated. Test
     for both single-image and batch inputs.
     """
 
     input_size = 8
     output_size = 3
 
-    dense = DenseLayer(
-        input_size=input_size,
-        output_size=output_size
-    )
-    
+    dense = DenseLayer(input_size=input_size, output_size=output_size)
+
     # ----- Single image -----
     x_single = np.random.randn(input_size)
 
     output_single = dense.forward(x_single)
+
+    # Test the output
+    assert output_single.shape == (1, output_size)
+    assert np.allclose(np.sum(output_single, axis=1), 1.0)
 
     # Random gradient from next layer
     dL_dout_single = np.random.randn(output_size)
@@ -72,20 +71,22 @@ def test_backward():
 
     assert dL_dinput_single.shape == (1, input_size)
 
-    
     # ----- Batch input -----
-    batch_size  = 2
+    batch_size = 2
     x_batch = np.random.randn(batch_size, input_size)
     output_batch = dense.forward(x_batch)
 
+    assert output_batch.shape == (batch_size, output_size)
+    assert np.allclose(np.sum(output_batch, axis=1), 1.0)
+
     dL_dout_batch = np.random.randn(batch_size, output_size)
-    
+
     # Store weights before backward pass
     weights_before = dense.weight.copy()
     bias_before = dense.bias.copy()
 
     dL_dinput_batch = dense.backward(dL_dout_batch, lr=0.01)
-    
+
     # Verify gradient shape
     assert dL_dinput_batch.shape == x_batch.shape
 

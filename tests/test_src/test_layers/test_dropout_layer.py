@@ -1,4 +1,5 @@
-import numpy as np 
+import numpy as np
+
 from src.layers.dropout_layer import DropoutLayer
 
 
@@ -7,7 +8,7 @@ def test_forward():
     Test the forward pass of the DropoutLayer.
 
     Vertify that the forward pass preserves input shape
-    ,zeroes out some values during training, and leaves 
+    ,zeroes out some values during training, and leaves
     input unchanged during inference.
     """
 
@@ -27,6 +28,7 @@ def test_forward():
 
     assert np.allclose(output_eval, x)
 
+
 def test_backward():
     """
     Test the backward pass of the DropoutLayer.
@@ -35,7 +37,7 @@ def test_backward():
     are zero where activations were dropped, and remain
     unchanged when no dropout mask is applied.
     """
-    
+
     x = np.ones((3, 4, 5))
 
     # Gradient from next layer

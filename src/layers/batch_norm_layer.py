@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Optional
+
+import numpy as np
 
 
 class BatchNormLayer:
@@ -33,7 +34,6 @@ class BatchNormLayer:
         self.variance: Optional[np.ndarray] = None
         self.x_hat: Optional[np.ndarray] = None
 
-
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Compute the forward pass of the batch normalization layer.
@@ -51,8 +51,9 @@ class BatchNormLayer:
         self.cache_input = x  # store input for backward pass
         self.single_image = single_image
 
-
-        self.batch_size, self.num_channels, self.input_height, self.input_width = x.shape
+        self.batch_size, self.num_channels, self.input_height, self.input_width = (
+            x.shape
+        )
 
         output = np.zeros_like(x)
 
@@ -62,19 +63,20 @@ class BatchNormLayer:
         self.x_hat = np.zeros_like(x)
 
         for c in range(self.num_channels):
-
             # Empirical mean and variance over spatial dimensions
             self.mean[c] = np.mean(x[:, c, :, :])
             self.variance[c] = np.var(x[:, c, :, :])
 
             # Normalize
-            self.x_hat[:, c, :, :] = (x[:, c, :, :] - self.mean[c]) / np.sqrt(self.variance[c] + self.epsilon)
+            self.x_hat[:, c, :, :] = (x[:, c, :, :] - self.mean[c]) / np.sqrt(
+                self.variance[c] + self.epsilon
+            )
 
             # Scale and shift
             output[:, c, :, :] = self.gamma[c] * self.x_hat[:, c, :, :] + self.beta[c]
 
         return output[0] if self.single_image else output
-    
+
     def backward(self, dL_dout: np.ndarray, lr: float) -> np.ndarray:
         """
         Compute the backward pass of the batch normalization layer.
@@ -88,13 +90,15 @@ class BatchNormLayer:
         """
 
         x = self.cache_input
-        
+
         if self.single_image:
             dL_dout = dL_dout[np.newaxis, :, :, :]
 
-        self.batch_size, self.num_channels, self.input_height, self.input_width = x.shape
+        self.batch_size, self.num_channels, self.input_height, self.input_width = (
+            x.shape
+        )
 
-        # Total number of elements per channel 
+        # Total number of elements per channel
         N = self.batch_size * self.input_height * self.input_width
 
         # Initialize gradients
@@ -102,10 +106,8 @@ class BatchNormLayer:
         dL_dgamma = np.zeros_like(self.gamma)
         dL_dbeta = np.zeros_like(self.beta)
 
-
         for c in range(self.num_channels):
-
-          # Step 1: gradients w.r.t gamma and beta
+            # Step 1: gradients w.r.t gamma and beta
             dL_dgamma[c] = np.sum(dL_dout[:, c, :, :] * self.x_hat[:, c, :, :])
             dL_dbeta[c] = np.sum(dL_dout[:, c, :, :])
 
@@ -114,17 +116,16 @@ class BatchNormLayer:
 
             # Step 3: gradient w.r.t variance
             dL_dvar = np.sum(
-            dL_dxhat * (x[:, c, :, :] - self.mean[c]) *
-            (-0.5) * (self.variance[c] + self.epsilon) ** (-1.5)
+                dL_dxhat
+                * (x[:, c, :, :] - self.mean[c])
+                * (-0.5)
+                * (self.variance[c] + self.epsilon) ** (-1.5)
             )
 
             # Step 4: gradient w.r.t mean
-            dL_dmean = (
-            np.sum(
+            dL_dmean = np.sum(
                 dL_dxhat * (-1 / np.sqrt(self.variance[c] + self.epsilon))
-            )
-            + dL_dvar * (1 / N) * np.sum(-2 * (x[:, c, :, :] - self.mean[c]))
-            )
+            ) + dL_dvar * (1 / N) * np.sum(-2 * (x[:, c, :, :] - self.mean[c]))
 
             # Step 5: gradient w.r.t input
             dL_dinput[:, c, :, :] = (
@@ -138,4 +139,3 @@ class BatchNormLayer:
         self.beta -= lr * dL_dbeta
 
         return dL_dinput[0] if self.single_image else dL_dinput
-

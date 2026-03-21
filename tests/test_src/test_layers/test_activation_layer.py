@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.layers.activation_layer import ActivationLayer
 
 
@@ -11,8 +12,7 @@ def test_forward():
     """
 
     # Create input tensor with both positive and negative values
-    x = np.array([[[-1.0, 2.0],
-                   [3.0, -4.0]]])
+    x = np.array([[[-1.0, 2.0], [3.0, -4.0]]])
 
     # Initialize activation layer
     relu = ActivationLayer(alpha=0.01)
@@ -20,10 +20,10 @@ def test_forward():
     output = relu.forward(x)
 
     # Expected output after Leaky ReLU
-    expected = np.array([[[-0.01, 2.0],
-                          [3.0, -0.04]]])
+    expected = np.array([[[-0.01, 2.0], [3.0, -0.04]]])
 
     assert np.allclose(output, expected)
+
 
 def test_backward():
     """
@@ -34,8 +34,7 @@ def test_backward():
     """
 
     # Input tensor
-    x = np.array([[[-1.0, 2.0],
-                   [3.0, -4.0]]])
+    x = np.array([[[-1.0, 2.0], [3.0, -4.0]]])
 
     relu = ActivationLayer(alpha=0.01)
 
@@ -48,7 +47,6 @@ def test_backward():
     dL_dinput = relu.backward(dL_dout)
 
     # Expected gradient (alpha for negative, 1 for positive)
-    expected_grad = np.array([[[0.01, 1.0],
-                               [1.0, 0.01]]])
+    expected_grad = np.array([[[0.01, 1.0], [1.0, 0.01]]])
 
     assert np.allclose(dL_dinput, expected_grad)

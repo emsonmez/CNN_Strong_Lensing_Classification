@@ -1,5 +1,7 @@
-import numpy as np 
 from typing import Optional
+
+import numpy as np
+
 
 class DropoutLayer:
     """
@@ -21,7 +23,6 @@ class DropoutLayer:
 
         self.mask: Optional[np.ndarray] = None
 
-
     def forward(self, x: np.ndarray, training: bool = True) -> np.ndarray:
         """
         Compute the forward pass of the dropout layer.
@@ -38,13 +39,13 @@ class DropoutLayer:
             return x
 
         # Dropout mask (1 = keep, 0 = drop)
-        self.mask = (np.random.rand(*x.shape) > self.dropout_rate)
+        self.mask = np.random.rand(*x.shape) > self.dropout_rate
 
         # Inverted dropout scaling
         output = (x * self.mask) / (1.0 - self.dropout_rate)
 
         return output
-    
+
     def backward(self, dL_dout: np.ndarray) -> np.ndarray:
         """
         Compute the backward pass of the dropout layer.
@@ -62,4 +63,3 @@ class DropoutLayer:
         dL_dinput = (dL_dout * self.mask) / (1.0 - self.dropout_rate)
 
         return dL_dinput
-

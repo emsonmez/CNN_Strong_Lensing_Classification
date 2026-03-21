@@ -2,6 +2,7 @@ checkpoints
 data
 __pycache__/
 .pytest_cache
+.ruff_cache
 .log
 .vscode/
 .env
@@ -10,3 +11,4 @@ __pycache__/
 .coverage
 .coverage.*
 coverage.xml
+htmlcov/

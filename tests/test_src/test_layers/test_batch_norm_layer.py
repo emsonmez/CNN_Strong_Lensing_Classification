@@ -1,4 +1,5 @@
-import numpy as np 
+import numpy as np
+
 from src.layers.batch_norm_layer import BatchNormLayer
 
 
@@ -7,7 +8,7 @@ def test_forward():
     Test the forward pass of the BatchNormLayer.
 
     Verify that the forward pass produces an output tensor
-    with the same shape as the input. Test for both single-image 
+    with the same shape as the input. Test for both single-image
     and batch inputs.
     """
 
@@ -33,14 +34,13 @@ def test_forward():
     assert output_batch.shape == x_batch.shape
 
 
-
 def test_backward():
     """
     Test the backward pass of the BatchNormLayer.
 
     Verify that the backward pass returns a gradient with the same
     shape as the input and that gamma and beta parameters are updated.
-    Test for both single-image 
+    Test for both single-image
     and batch inputs.
     """
 
@@ -56,17 +56,14 @@ def test_backward():
     output_single = bn.forward(x_single)
 
     # Random gradient from next layer
-    dL_dout = np.random.randn(*output_single.shape)
-
-    # Random gradient from next layer
     dL_dout_single = np.random.randn(*output_single.shape)
     dL_dinput_single = bn.backward(dL_dout_single, lr=0.01)
 
     assert dL_dinput_single.shape == x_single.shape
 
     # ----- Batch input -----
-    batch_size = 2 
-    x_batch =  np.random.randn(batch_size, channels, height, width)
+    batch_size = 2
+    x_batch = np.random.randn(batch_size, channels, height, width)
 
     output_batch = bn.forward(x_batch)
 

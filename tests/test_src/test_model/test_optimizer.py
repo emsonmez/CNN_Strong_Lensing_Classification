@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.model.optimizer import AdamOptimizer
 
 
@@ -7,7 +8,7 @@ def test_step():
     Test the step function of AdamOptimizer.
 
     Verify that parameters update in the negative gradient direction
-    and continue updating correctly across multiple steps. 
+    and continue updating correctly across multiple steps.
     Also checks if non-trainable layers are safely ignored.
     """
 
@@ -20,7 +21,7 @@ def test_step():
             # Constant positive gradients
             self.dL_dweight = np.array([[2.0]])
             self.dL_dbias = np.array([2.0])
-    
+
     # Non-trainable layer (no gradients)
     class NonTrainableLayer:
         def __init__(self):
@@ -29,7 +30,7 @@ def test_step():
     # Initialize the class with our AdamOptimizer class
     layer = DummyLayer()
     non_trainable = NonTrainableLayer()
-    optimizer = AdamOptimizer(lr=0.1) # Bigger steps then default 
+    optimizer = AdamOptimizer(lr=0.1)  # Bigger steps then default
 
     weight_before = layer.weight.copy()
     bias_before = layer.bias.copy()
@@ -51,17 +52,3 @@ def test_step():
     # Parameters should continue decreasing for a positive second order gradient
     assert layer.weight < weight_after_step1
     assert layer.bias < bias_after_step1
-
-
-
-
-
-    
-
-
-
-
-
-
-
-

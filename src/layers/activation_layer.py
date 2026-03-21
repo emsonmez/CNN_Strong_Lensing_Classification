@@ -1,5 +1,7 @@
-import numpy as np 
 from typing import Optional
+
+import numpy as np
+
 
 class ActivationLayer:
     """
@@ -20,7 +22,6 @@ class ActivationLayer:
 
         # Stored for backward pass
         self.cache_input: Optional[np.ndarray] = None
-
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """

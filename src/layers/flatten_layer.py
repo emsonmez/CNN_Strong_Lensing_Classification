@@ -1,5 +1,7 @@
-import numpy as np
 from typing import Optional
+
+import numpy as np
+
 
 class FlattenLayer:
     """
@@ -7,7 +9,7 @@ class FlattenLayer:
 
     This layer reshapes a multi-dimensional tensor (C, H, W) into a
     single vector (C * H * W) so it can be fed into the dense layer.
-    No trainable parameters, so this is purely for logistics purposes. 
+    No trainable parameters, so this is purely for logistics purposes.
     """
 
     def __init__(self):
@@ -17,7 +19,6 @@ class FlattenLayer:
 
         # Store input shape for backward pass
         self.cache_input_shape: Optional[tuple] = None
-
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -31,7 +32,7 @@ class FlattenLayer:
 
         self.single_image = False
         if x.ndim == 3:
-            x = x[np.newaxis, ...] 
+            x = x[np.newaxis, ...]
             self.single_image = True
 
         self.cache_input_shape = x.shape
@@ -40,7 +41,7 @@ class FlattenLayer:
         output = x.reshape(x.shape[0], -1)
 
         return output[0] if self.single_image else output
-    
+
     def backward(self, dL_dout: np.ndarray) -> np.ndarray:
         """
         Compute the backward pass of the flatten layer.

@@ -10,7 +10,7 @@ ci:
   submodules: false
 
 default_language_version:
-  python: python3.12
+  python: python3
 
 repos:
   # General sanity checks
@@ -26,29 +26,37 @@ repos:
 
   # Ruff (lint + fix)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.5
+    rev: v0.7.1
     hooks:
       - id: ruff
-        args: ["--fix"] 
+        args: [--fix]
+        types: [python]
       - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.5.4
+    hooks:
+      - id: uv-lock
+
+  # TODO: Add pyright
 
   # Black (formatting)
   - repo: https://github.com/psf/black
     rev: 24.4.2
     hooks:
       - id: black
+        language_version: python3
 
   # Jupyter Notebook support
   - repo: https://github.com/nbQA-dev/nbQA
     rev: 1.9.1
     hooks:
       - id: nbqa-ruff
-        args: ["--fix"]
       - id: nbqa-black
-
-  # Docstring formatting
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.1.0
     hooks:
-      - id: docformatter
-        args: ["--in-place"]
+      - id: black-jupyter
+        language_version: python3
+
+# TODO: Docstring Formatter doesn't take Python 3.14, only previous versions
