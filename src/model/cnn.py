@@ -16,36 +16,47 @@ class CNNModel:
     Convolutional Neural Network (CNN) model and flowchart.
     """
 
-    def __init__(self):
+    def __init__(self, input_shape=(1, 120, 120)):
         """
         Initialize CNN model architecture.
 
-        TODO: Optimize the hyper-parameters and order of layers if needed.
+        :param input_shape: Shape of input image (C, H, W)
+        :type input_shape: tuple
         """
 
-        self.layers: List = [
-            # First Conv Block
+        # Convolutional backbone
+        self.feature_extractor: List = [
             ConvLayer(in_channels=1, out_channels=8, kernel_size=(3, 3)),
             BatchNormLayer(num_channels=8),
             ActivationLayer(alpha=0.01),
             MaxPoolLayer(pool_size=2, stride=2),
-            # Second Conv Block
             ConvLayer(in_channels=8, out_channels=16, kernel_size=(3, 3)),
             BatchNormLayer(num_channels=16),
             ActivationLayer(alpha=0.01),
             MaxPoolLayer(pool_size=2, stride=2),
-            # Third Conv Block (no pooling to avoid overfitting)
             ConvLayer(in_channels=16, out_channels=32, kernel_size=(3, 3)),
             BatchNormLayer(num_channels=32),
             ActivationLayer(alpha=0.01),
-            # Transition to Dense
+        ]
+
+        # Compute flatten size dynamically
+        dummy = np.random.randn(1, *input_shape)  # batch_size=(1, C, H, W)
+        x = dummy
+
+        for layer in self.feature_extractor:
+            x = layer.forward(x)
+
+        self.flatten_size = x.size // x.shape[0]
+
+        # Rest of the full model
+        self.layers: List = [
+            *self.feature_extractor,
             FlattenLayer(),
             # Dense Block
-            DenseLayer(input_size=32 * 26 * 26, output_size=128),
+            DenseLayer(input_size=self.flatten_size, output_size=128),
             BatchNormLayer(num_channels=128),
             ActivationLayer(alpha=0.01),
             DropoutLayer(dropout_rate=0.15),
-            # Output Layer
             # 7 classes (lensed quasar, supernoave, galaxy, their non-lensed versions,
             # and a "other/unidentifiable" case; might decide to drop this last case)
             DenseLayer(input_size=128, output_size=7),
@@ -72,19 +83,24 @@ class CNNModel:
 
         return x
 
-    def backward(self, dL: np.ndarray, lr: float) -> None:
+    def backward(self, dL: np.ndarray, lr: float = 0.0) -> None:
         """
-        Compute the backward passes through all layers.
+        Compute backward passes through all layers and update trainable parameters.
+
+        Pass `lr` only to layers that accept it.
 
         :param dL: Gradient of loss
         :type dL: np.ndarray
-        :param lr: Learning rate (set to 0 if using optimizer)
+        :param lr: Learning rate (unused when using optimizer)
         :type lr: float
         """
 
         for layer in reversed(self.layers):
-            # Some layers don't take lr (like pooling, activation)
-            try:
+            # Check if backward method has a 'lr' parameter
+            from inspect import signature
+
+            sig = signature(layer.backward)
+            if "lr" in sig.parameters:
                 dL = layer.backward(dL, lr)
-            except TypeError:
+            else:
                 dL = layer.backward(dL)

@@ -54,7 +54,7 @@ repos:
     hooks:
       - id: uv-lock
         args: [--locked]
-        stages: [push]   # still runs in pre-commit.ci
+        stages: [pre-push]   # still runs in pre-commit.ci
 
   # 4. Security over secrets (API keys, tokens, passwords)
   - repo: https://github.com/gitleaks/gitleaks
@@ -71,7 +71,7 @@ repos:
         language: python
         additional_dependencies: [pip-audit]
         pass_filenames: false
-        stages: [push]
+        stages: [pre-push]
 
   # TODO: Docstring Formatter (docformatter) doesn't support Python 3.14, only previous versions
   # TODO: Maybe add pyright

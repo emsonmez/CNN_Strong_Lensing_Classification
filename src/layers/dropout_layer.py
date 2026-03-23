@@ -10,7 +10,7 @@ class DropoutLayer:
     and scales the remaining activations to maintain expected value.
     """
 
-    def __init__(self, dropout_rate: float = 0.2):
+    def __init__(self, dropout_rate: float = 0.15):
         """
         Initialize dropout layer parameters.
 

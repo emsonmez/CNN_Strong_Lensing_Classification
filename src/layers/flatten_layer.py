@@ -9,6 +9,7 @@ class FlattenLayer:
     This layer reshapes a multi-dimensional tensor (C, H, W) into a
     single vector (C * H * W) so it can be fed into the dense layer.
     No trainable parameters, so this is purely for logistics purposes.
+    Generalized for both single-image and batch inputs.
     """
 
     def __init__(self):

@@ -7,7 +7,8 @@ class DenseLayer:
     Fully (dense) connected layer for classification.
 
     Combines extracted CNN features and maps them to class probabilities.
-    Follows the softmax formulation.
+    Follows the softmax formulation. Generalized for both single-image
+    and batch inputs.
     """
 
     def __init__(self, input_size: int, output_size: int):
@@ -40,22 +41,29 @@ class DenseLayer:
         :return: Output probabilities after softmax activation
         :rtype: np.ndarray
         """
+
+        single_input = False
         # Ensure batch dimension
-        if x.ndim == 1:
+        if x.ndim == 1:  # (input_size,)
             x = x[np.newaxis, :]
+            single_input = True
+
         self.cache_input = x
+        self.single_input = single_input
+
+        self.batch_size, self.input_size = x.shape
 
         # Linear transformation
         z = x @ self.weight.T + self.bias  # (N, output_size)
 
-        # Softmax non-linear activation function
+        # Softmax non-linear activation function (numerically stable)
         z_shifted = z - np.max(
             z, axis=1, keepdims=True
         )  # Shift input values for numerical stability
         exp_z = np.exp(z_shifted)
         self.output = exp_z / np.sum(exp_z, axis=1, keepdims=True)
 
-        return self.output
+        return self.output[0] if self.single_input else self.output
 
     def backward(self, dL_dout: np.ndarray, lr: float) -> np.ndarray:
         """
@@ -71,29 +79,27 @@ class DenseLayer:
 
         x = self.cache_input
 
-        # Gradient of loss w.r.t linear output
-        dL_dz = dL_dout
-        if dL_dz.ndim == 1:
-            dL_dz = dL_dz[np.newaxis, :]
+        if self.single_input:
+            dL_dout = dL_dout[np.newaxis, :]
 
-        # Batch size after normalization
-        N = x.shape[0]
+        # Batch size
+        self.batch_size = x.shape[0]
 
         # Initialize gradients
-        dL_dweight = dL_dz.T @ x  # (output_size, input_size)
-        dL_dbias = np.sum(dL_dz, axis=0)  # (output_size,)
-        dL_dinput = dL_dz @ self.weight  # (N, input_size)
+        dL_dweight = dL_dout.T @ x  # (output_size, input_size)
+        dL_dbias = np.sum(dL_dout, axis=0)  # (output_size,)
+        dL_dinput = dL_dout @ self.weight  # (N, input_size)
 
         # Average over batch
-        dL_dweight /= N
-        dL_dbias /= N
+        dL_dweight /= self.batch_size
+        dL_dbias /= self.batch_size
 
         # Store gradients for optimizer
         self.dL_dweight = dL_dweight
         self.dL_dbias = dL_dbias
 
-        # Update layer parameters
+        # Update layer parameters (only if lr > 0)
         self.weight -= lr * dL_dweight
         self.bias -= lr * dL_dbias
 
-        return dL_dinput
+        return dL_dinput[0] if self.single_input else dL_dinput

@@ -50,8 +50,7 @@ def test_backward():
 
     Verify that the backward pass returns a gradient with the same
     shape as the input and that gamma and beta parameters are updated.
-    Test for both single-image
-    and batch inputs.
+    Test for both single-image and batch inputs.
     """
 
     channels = 3

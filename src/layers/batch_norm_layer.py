@@ -6,7 +6,8 @@ class BatchNormLayer:
     """
     Batch normalization layer for stabilizing training.
     Generalized for both dense (N, C) and conv inputs
-    (N, C, H, W).
+    (N, C, H, W), as well as single-image
+    and batch inputs.
 
     Normalizes feature maps using per-channel mean and variance,
     then applies learnable scale (gamma) and shift (beta).
@@ -202,7 +203,11 @@ class BatchNormLayer:
                     + dL_dmean * (1 / N)
                 )
 
-        # Update parameters
+        # Store gradients for optimizer
+        self.dL_dgamma = dL_dgamma
+        self.dL_dbeta = dL_dbeta
+
+        # Update parameters directly if a learning rate is provided
         self.gamma -= lr * dL_dgamma
         self.beta -= lr * dL_dbeta
 

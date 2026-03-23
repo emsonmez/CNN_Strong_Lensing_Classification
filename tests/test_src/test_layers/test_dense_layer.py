@@ -23,11 +23,10 @@ def test_forward():
     output_single = dense.forward(x_single)
 
     # Verify output shape
-    assert output_single.shape == (1, output_size)
+    assert output_single.shape == (output_size,)
 
     # Verify softmax probabilities sum to 1
-    sums = np.sum(output_single, axis=1)
-    assert np.allclose(sums, 1.0)
+    assert np.isclose(np.sum(output_single), 1)
 
     # ----- Batch input -----
     batch_size = 2
@@ -61,18 +60,27 @@ def test_backward():
     output_single = dense.forward(x_single)
 
     # Test the output
-    assert output_single.shape == (1, output_size)
-    assert np.allclose(np.sum(output_single, axis=1), 1.0)
+    assert output_single.shape == (output_size,)
+    assert np.isclose(np.sum(output_single), 1.0)
+
+    # Store parameters before backward
+    weights_before_single = dense.weight.copy()
+    bias_before_single = dense.bias.copy()
 
     # Random gradient from next layer
     dL_dout_single = np.random.randn(output_size)
     dL_dinput_single = dense.backward(dL_dout_single, lr=0.01)
 
-    assert dL_dinput_single.shape == (1, input_size)
+    assert dL_dinput_single.shape == x_single.shape
+
+    # Verify parameters updated
+    assert not np.allclose(weights_before_single, dense.weight)
+    assert not np.allclose(bias_before_single, dense.bias)
 
     # ----- Batch input -----
     batch_size = 2
     x_batch = np.random.randn(batch_size, input_size)
+
     output_batch = dense.forward(x_batch)
 
     assert output_batch.shape == (batch_size, output_size)

@@ -6,58 +6,95 @@ def test_forward():
     """
     Test the forward pass of the ConvolutionLayer.
 
-    Verify that the forward pass produces the expected output shape.
+    Verify correct output shape. Test for both batch and single-image inputs,
+    and with padding/non-padding to cover all code branches.
     """
 
-    batch = 2
     in_channels = 3
     height = 10
     width = 10
 
-    # Create random input tensor (batch, channels, height, width)
-    x = np.random.randn(batch, in_channels, height, width)
-
-    # Initialize convolutional layer
+    # ----- Without padding -----
     conv = ConvLayer(
         in_channels=3, out_channels=4, kernel_size=(3, 3), stride=1, padding=0
     )
-
-    output = conv.forward(x)
-
-    # Compute expected output spatial dimensions
     expected_h = height - 3 + 1
     expected_w = width - 3 + 1
 
-    assert output.shape == (batch, 4, expected_h, expected_w)
+    # ----- Single image -----
+    x_single = np.random.randn(in_channels, height, width)
+    output_single = conv.forward(x_single)
+    assert output_single.shape == (4, expected_h, expected_w)
+
+    # ----- Batch input -----
+    batch = 2
+    x_batch = np.random.randn(batch, in_channels, height, width)
+    output_batch = conv.forward(x_batch)
+    assert output_batch.shape == (batch, 4, expected_h, expected_w)
+
+    # ----- With padding -----
+    conv_pad = ConvLayer(
+        in_channels=3, out_channels=4, kernel_size=(3, 3), stride=1, padding=2
+    )
+    # Output dimensions increase due to padding
+    expected_h_pad = height + 2 * 2 - 3 + 1
+    expected_w_pad = width + 2 * 2 - 3 + 1
+
+    x_single_pad = np.random.randn(in_channels, height, width)
+    output_single_pad = conv_pad.forward(x_single_pad)
+    assert output_single_pad.shape == (4, expected_h_pad, expected_w_pad)
+
+    x_batch_pad = np.random.randn(batch, in_channels, height, width)
+    output_batch_pad = conv_pad.forward(x_batch_pad)
+    assert output_batch_pad.shape == (batch, 4, expected_h_pad, expected_w_pad)
 
 
 def test_backward():
     """
     Test the backward pass of the ConvolutionLayer.
 
-    Verify that backward pass returns gradient with same shape as input.
+    Verify gradient shape and parameter updates. Test for
+    both batch and single inputs, and with padding/non-padding to cover
+    all code branches.
     """
 
-    batch = 2
     in_channels = 3
     height = 10
     width = 10
 
-    x = np.random.randn(batch, in_channels, height, width)
-
+    # ----- Without padding -----
     conv = ConvLayer(
         in_channels=3, out_channels=4, kernel_size=(3, 3), stride=1, padding=0
     )
 
-    output = conv.forward(x)
+    # ----- Single image -----
+    x_single = np.random.randn(in_channels, height, width)
+    output_single = conv.forward(x_single)
+    dL_dout_single = np.random.randn(*output_single.shape)
+    dL_dinput_single = conv.backward(dL_dout_single, lr=0.01)
 
-    # Random gradient coming from next layer
-    dL_dout = np.random.randn(*output.shape)
+    assert dL_dinput_single.shape == x_single.shape
 
-    # Store weights to check update
+    # ----- Batch input -----
+    batch = 2
+    x_batch = np.random.randn(batch, in_channels, height, width)
+    output_batch = conv.forward(x_batch)
+    dL_dout_batch = np.random.randn(*output_batch.shape)
     weights_before = conv.weight.copy()
+    dL_dinput_batch = conv.backward(dL_dout_batch, lr=0.01)
 
-    dL_dinput = conv.backward(dL_dout, lr=0.01)
-
-    assert dL_dinput.shape == x.shape
+    assert dL_dinput_batch.shape == x_batch.shape
     assert not np.allclose(weights_before, conv.weight)
+
+    # ----- With padding -----
+    conv_pad = ConvLayer(
+        in_channels=3, out_channels=4, kernel_size=(3, 3), stride=1, padding=2
+    )
+    x_batch_pad = np.random.randn(batch, in_channels, height, width)
+    output_batch_pad = conv_pad.forward(x_batch_pad)
+    dL_dout_batch_pad = np.random.randn(*output_batch_pad.shape)
+    weights_before_pad = conv_pad.weight.copy()
+    dL_dinput_batch_pad = conv_pad.backward(dL_dout_batch_pad, lr=0.01)
+
+    assert dL_dinput_batch_pad.shape == x_batch_pad.shape
+    assert not np.allclose(weights_before_pad, conv_pad.weight)

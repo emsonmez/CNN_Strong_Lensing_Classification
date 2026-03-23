@@ -49,46 +49,47 @@ class AdamOptimizer:
         :type layers: list
         """
 
-        self.t += 1
+        self.t += 1  # Time step
 
         for idx, layer in enumerate(layers):
-            if not hasattr(layer, "dL_dweight"):
-                continue
+            # Determine if layer has standard parameters (weight, bias)
+            # or parameters needed to be updated, but not used (gamma, beta)
+            if hasattr(layer, "dL_dweight") and hasattr(layer, "weight"):
+                # Standard layer (Conv/Dense)
+                grad_pairs = [("weight", "dL_dweight"), ("bias", "dL_dbias")]
+            elif hasattr(layer, "dL_dgamma") and hasattr(layer, "gamma"):
+                # BatchNorm layer
+                grad_pairs = [("gamma", "dL_dgamma"), ("beta", "dL_dbeta")]
+            else:
+                continue  # No parameters to update
 
-            # Initialize moments
+            # Initialize moments if first time
             if idx not in self.m:
-                self.m[idx] = {
-                    "w": np.zeros_like(layer.weight),
-                    "b": np.zeros_like(layer.bias),
-                }
-                self.v[idx] = {
-                    "w": np.zeros_like(layer.weight),
-                    "b": np.zeros_like(layer.bias),
-                }
+                self.m[idx] = {}
+                self.v[idx] = {}
+                for param_name, _ in grad_pairs:
+                    self.m[idx][param_name] = np.zeros_like(getattr(layer, param_name))
+                    self.v[idx][param_name] = np.zeros_like(getattr(layer, param_name))
 
-            # Gradients
-            g_w = layer.dL_dweight
-            g_b = layer.dL_dbias
+            # Update each parameter using Adam
+            for param_name, grad_name in grad_pairs:
+                g = getattr(layer, grad_name)
 
-            # First moment
-            self.m[idx]["w"] = self.beta1 * self.m[idx]["w"] + (1 - self.beta1) * g_w
-            self.m[idx]["b"] = self.beta1 * self.m[idx]["b"] + (1 - self.beta1) * g_b
-
-            # Second moment
-            self.v[idx]["w"] = self.beta2 * self.v[idx]["w"] + (1 - self.beta2) * (
-                g_w**2
-            )
-            self.v[idx]["b"] = self.beta2 * self.v[idx]["b"] + (1 - self.beta2) * (
-                g_b**2
-            )
-
-            # Bias correction
-            m_hat_w = self.m[idx]["w"] / (1 - self.beta1**self.t)
-            v_hat_w = self.v[idx]["w"] / (1 - self.beta2**self.t)
-
-            m_hat_b = self.m[idx]["b"] / (1 - self.beta1**self.t)
-            v_hat_b = self.v[idx]["b"] / (1 - self.beta2**self.t)
-
-            # Update rule
-            layer.weight -= self.lr * m_hat_w / (np.sqrt(v_hat_w) + self.epsilon)
-            layer.bias -= self.lr * m_hat_b / (np.sqrt(v_hat_b) + self.epsilon)
+                # First moment (same general structure)
+                self.m[idx][param_name] = (
+                    self.beta1 * self.m[idx][param_name] + (1 - self.beta1) * g
+                )
+                # Second moment(same general structure)
+                self.v[idx][param_name] = (
+                    self.beta2 * self.v[idx][param_name] + (1 - self.beta2) * g**2
+                )
+                # Bias-corrected moments
+                m_hat = self.m[idx][param_name] / (1 - self.beta1**self.t)
+                v_hat = self.v[idx][param_name] / (1 - self.beta2**self.t)
+                # Update rule
+                setattr(
+                    layer,
+                    param_name,
+                    getattr(layer, param_name)
+                    - self.lr * m_hat / (np.sqrt(v_hat) + self.epsilon),
+                )
