@@ -116,7 +116,6 @@ class ConvLayer:
         )
 
         # Loop over channels and output positions
-        # TODO: Vectorize this
         for n in range(self.batch_size):
             for out_c in range(self.out_channels):
                 for i in range(self.output_height):

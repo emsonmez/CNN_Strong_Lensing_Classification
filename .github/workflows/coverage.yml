@@ -34,6 +34,11 @@ jobs:
         run: |
           pytest --cov=. --cov-report=xml --cov-report=term
 
+      - name: Import Codecov GPG key
+        run: |
+          curl -s https://keybase.io/codecovsecurity/pgp_keys.asc -o codecov.asc
+          gpg --import codecov.asc
+
       - name: Upload coverage & test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5

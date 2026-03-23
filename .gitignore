@@ -5,7 +5,6 @@ __pycache__/
 .ruff_cache
 .log
 .vscode/
-.env
 
 # Unit Tests & Coverage Reports
 .coverage
@@ -14,3 +13,17 @@ coverage.xml
 junit.xml
 htmlcov/
 uv.lock
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/

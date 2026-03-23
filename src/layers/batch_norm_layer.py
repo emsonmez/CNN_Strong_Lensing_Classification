@@ -207,7 +207,7 @@ class BatchNormLayer:
         self.dL_dgamma = dL_dgamma
         self.dL_dbeta = dL_dbeta
 
-        # Update parameters directly if a learning rate is provided
+        # Update layer parameters (only if lr > 0)
         self.gamma -= lr * dL_dgamma
         self.beta -= lr * dL_dbeta
 
