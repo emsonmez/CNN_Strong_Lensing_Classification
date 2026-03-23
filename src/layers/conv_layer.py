@@ -8,7 +8,7 @@ class ConvLayer:
 
     Applies learnable filters across spatial regions of the input tensor.
     Produces one feature map per filter. Generalized for both single-image
-    and batch inputs.
+    and batch inputs (with padding/non-padding).
     """
 
     def __init__(
