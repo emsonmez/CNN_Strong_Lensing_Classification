@@ -15,7 +15,7 @@ default_language_version:
 repos:
   # General sanity checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: check-yaml
       - id: check-json
@@ -26,13 +26,13 @@ repos:
 
   # 2. Python linting & formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.1
+    rev: v0.15.7
     hooks:
       - id: ruff
         args: [--fix]
 
-  - repo: https://github.com/psf/black
-    rev: 24.4.2
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.3.1
     hooks:
       - id: black
 
@@ -43,14 +43,14 @@ repos:
       - id: nbqa-ruff
       - id: nbqa-black
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.1.0
+    rev: 26.3.1
     hooks:
       - id: black-jupyter
         language_version: python3
 
   # 3. Dependency safety / lock file checks
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.5.4
+    rev: 0.10.12
     hooks:
       - id: uv-lock
         args: [--locked]
@@ -58,7 +58,7 @@ repos:
 
   # 4. Security over secrets (API keys, tokens, passwords)
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.24.0
+    rev: v8.30.0
     hooks:
       - id: gitleaks
 
