@@ -1,4 +1,5 @@
 from typing import List
+from inspect import signature
 import numpy as np
 
 # Imnporting all layers
@@ -44,7 +45,12 @@ class CNNModel:
         x = dummy
 
         for layer in self.feature_extractor:
-            x = layer.forward(x)
+            sig = signature(layer.forward)
+
+            if "training" in sig.parameters:
+                x = layer.forward(x, training=True)
+            else:
+                x = layer.forward(x)
 
         self.flatten_size = x.size // x.shape[0]
 
@@ -75,8 +81,8 @@ class CNNModel:
         """
 
         for layer in self.layers:
-            # Handle dropout separately (needs training flag)
-            if isinstance(layer, DropoutLayer):
+            sig = signature(layer.forward)
+            if "training" in sig.parameters:
                 x = layer.forward(x, training=training)
             else:
                 x = layer.forward(x)

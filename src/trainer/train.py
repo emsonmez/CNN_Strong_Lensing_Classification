@@ -22,9 +22,15 @@ class Trainer:
         self.loss_fn = loss_fn
         self.optimizer = optimizer
 
-    def train(self, X: np.ndarray, y: np.ndarray, epochs: int = 10) -> dict:
+    def train(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        epochs: int = 10,
+        batch_size: int = 32,
+    ) -> dict:
         """
-        Train the model.
+        Train the model using mini-batch gradient descent.
 
         :param X: Input data
         :type X: np.ndarray
@@ -32,6 +38,8 @@ class Trainer:
         :type y: np.ndarray
         :param epochs: Number of training epochs
         :type epochs: int
+        :param batch_size: Number of samples per batch
+        :type batch_size: int
         :return: Training history (loss and accuracy)
         :rtype: dict
         """
@@ -52,24 +60,26 @@ class Trainer:
             X_shuffled = X[indices]
             y_shuffled = y[indices]
 
-            for i in range(num_samples):
-                x_sample = X_shuffled[i][np.newaxis, ...]
-                y_sample = y_shuffled[i][np.newaxis, ...]
+            for i in range(0, num_samples, batch_size):
+                X_batch = X_shuffled[i : i + batch_size]
+                y_batch = y_shuffled[i : i + batch_size]
 
-                # Forward pass
-                y_pred = self.model.forward(x_sample, training=True)
+                # Forward pass (batch)
+                y_pred = self.model.forward(X_batch, training=True)
 
-                loss = self.loss_fn.forward(y_pred, y_sample)
-                total_loss += loss
+                # Compute loss (assumes loss_fn handles batch)
+                loss = self.loss_fn.forward(y_pred, y_batch)
+                total_loss += loss * len(
+                    X_batch
+                )  # Ensures correct averaging across uneven last batch
 
-                # Accuracy
-                if np.argmax(y_pred) == np.argmax(y_sample):
-                    correct_predictions += 1
+                # Accuracy (batch)
+                correct_predictions += np.sum(
+                    np.argmax(y_pred, axis=1) == np.argmax(y_batch, axis=1)
+                )
 
-                # Backward pass
+                # Backward pass (lr = 0; optimizer handles updates)
                 dL = self.loss_fn.backward()
-
-                # lr = 0 (optimizer handles updates)
                 self.model.backward(dL, lr=0)
 
                 # Optimizer step

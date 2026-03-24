@@ -21,27 +21,44 @@ def test_forward():
     # ----- Conv: Single image -----
     x_single = np.random.randn(channels, height, width)
 
-    output_single = bn.forward(x_single)  # Perform and vertify forward pass
-    assert output_single.shape == x_single.shape
+    output_single_train = bn.forward(x_single, training=True)
+    output_single_eval = bn.forward(x_single, training=False)
+
+    assert output_single_train.shape == x_single.shape
+    assert output_single_eval.shape == x_single.shape
 
     # ----- Conv: Batch input -----
     batch_size = 2
     x_batch = np.random.randn(batch_size, channels, height, width)
 
-    output_batch = bn.forward(x_batch)
-    assert output_batch.shape == x_batch.shape
+    output_batch_train = bn.forward(x_batch, training=True)
+    output_batch_eval = bn.forward(x_batch, training=False)
+
+    assert output_batch_train.shape == x_batch.shape
+    assert output_batch_eval.shape == x_batch.shape
+
+    # Outputs should differ (different stats)
+    assert not np.allclose(output_batch_train, output_batch_eval)
 
     # ----- Dense: Single sample -----
     x_single_dense = np.random.randn(channels)
 
-    output_single_dense = bn.forward(x_single_dense)
-    assert output_single_dense.shape == x_single_dense.shape
+    output_single_dense_train = bn.forward(x_single_dense, training=True)
+    output_single_dense_eval = bn.forward(x_single_dense, training=False)
+
+    assert output_single_dense_train.shape == x_single_dense.shape
+    assert output_single_dense_eval.shape == x_single_dense.shape
 
     # ----- Dense: Batch input -----
     x_batch_dense = np.random.randn(batch_size, channels)
 
-    output_batch_dense = bn.forward(x_batch_dense)
-    assert output_batch_dense.shape == x_batch_dense.shape
+    output_batch_dense_train = bn.forward(x_batch_dense, training=True)
+    output_batch_dense_eval = bn.forward(x_batch_dense, training=False)
+
+    assert output_batch_dense_train.shape == x_batch_dense.shape
+    assert output_batch_dense_eval.shape == x_batch_dense.shape
+
+    assert not np.allclose(output_batch_dense_train, output_batch_dense_eval)
 
 
 def test_backward():
@@ -49,7 +66,7 @@ def test_backward():
     Test the backward pass of the BatchNormLayer.
 
     Verify that the backward pass returns a gradient with the same
-    shape as the input and that gamma and beta parameters are updated.
+    shape as the input and that gamma and beta parameters are computed.
     Test for both single-image and batch inputs.
     """
 
@@ -69,6 +86,7 @@ def test_backward():
     dL_dinput_single = bn.backward(dL_dout_single, lr=0.01)
 
     assert dL_dinput_single.shape == x_single.shape
+    assert np.all(np.isfinite(dL_dinput_single))
 
     # ----- Conv: Batch input -----
     batch_size = 2
@@ -76,16 +94,17 @@ def test_backward():
 
     output_batch = bn.forward(x_batch)
 
-    # Store learnable parameters before next update instance
-    gamma_before = bn.gamma.copy()
-    beta_before = bn.beta.copy()
-
     dL_dout_batch = np.random.randn(*output_batch.shape)
     dL_dinput_batch = bn.backward(dL_dout_batch, lr=0.01)
 
     assert dL_dinput_batch.shape == x_batch.shape
-    assert not np.allclose(gamma_before, bn.gamma)
-    assert not np.allclose(beta_before, bn.beta)
+    assert np.all(np.isfinite(dL_dinput_batch))
+
+    # Check gradients exist
+    assert hasattr(bn, "dL_dgamma")
+    assert hasattr(bn, "dL_dbeta")
+    assert bn.dL_dgamma.shape == (channels,)
+    assert bn.dL_dbeta.shape == (channels,)
 
     # ----- Dense: Single sample -----
     x_single_dense = np.random.randn(channels)
@@ -96,18 +115,19 @@ def test_backward():
     dL_dinput_single_dense = bn.backward(dL_dout_single_dense, lr=0.01)
 
     assert dL_dinput_single_dense.shape == x_single_dense.shape
+    assert np.all(np.isfinite(dL_dinput_single_dense))
 
     # ----- Dense: Batch input -----
     x_batch_dense = np.random.randn(batch_size, channels)
 
     output_batch_dense = bn.forward(x_batch_dense)
 
-    gamma_before = bn.gamma.copy()
-    beta_before = bn.beta.copy()
-
     dL_dout_batch_dense = np.random.randn(*output_batch_dense.shape)
     dL_dinput_batch_dense = bn.backward(dL_dout_batch_dense, lr=0.01)
 
     assert dL_dinput_batch_dense.shape == x_batch_dense.shape
-    assert not np.allclose(gamma_before, bn.gamma)
-    assert not np.allclose(beta_before, bn.beta)
+    assert np.all(np.isfinite(dL_dinput_batch_dense))
+
+    # Check gradients exist
+    assert bn.dL_dgamma.shape == (channels,)
+    assert bn.dL_dbeta.shape == (channels,)

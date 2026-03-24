@@ -4,7 +4,7 @@ import numpy as np
 
 class CrossEntropyLoss:
     """
-    Multiclass/Categorical Cross-Entropy loss for multi-class classification.
+    Categorical Cross-Entropy loss for multi-class classification.
 
     Measures the difference between predicted probabilities
     and true class labels.

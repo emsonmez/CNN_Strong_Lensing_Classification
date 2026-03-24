@@ -30,18 +30,25 @@ class BatchNormLayer:
         self.gamma = np.ones(num_channels)
         self.beta = np.zeros(num_channels)
 
+        # Running statistics (for inference)
+        self.running_mean = np.zeros(num_channels)
+        self.running_var = np.ones(num_channels)
+        self.momentum = 0.9
+
         # Stored for backward pass
         self.cache_input: Optional[np.ndarray] = None
         self.mean: Optional[np.ndarray] = None
         self.variance: Optional[np.ndarray] = None
         self.x_hat: Optional[np.ndarray] = None
 
-    def forward(self, x: np.ndarray) -> np.ndarray:
+    def forward(self, x: np.ndarray, training: bool = True) -> np.ndarray:
         """
         Compute the forward pass of the batch normalization layer.
 
         :param x: Input tensor of shape (C, H, W)
         :type x: np.ndarray
+        :param training: Whether the model is in training mode
+        :type training: bool
         :return: Normalized and scaled output tensor
         :rtype: np.ndarray
         """
@@ -61,7 +68,7 @@ class BatchNormLayer:
         self.cache_input = x  # store input for backward pass
         self.single_image = single_image
 
-        # Handle dense vs conv
+        # Determine shape for dense vs conv
         if x.ndim == 2:
             self.batch_size, self.num_channels = x.shape
             self.input_height, self.input_width = 1, 1
@@ -78,30 +85,41 @@ class BatchNormLayer:
         self.x_hat = np.zeros_like(x)
 
         for c in range(self.num_channels):
-            if x.ndim == 2:  # Dense case
-                # Empirical mean and variance over spatial dimensions
-                self.mean[c] = np.mean(x[:, c])
-                self.variance[c] = np.var(x[:, c])
+            if training:
+                # Compute batch statistics
+                if x.ndim == 2:  # Dense case
+                    # Empirical mean and variance over spatial dimensions
+                    self.mean[c] = np.mean(x[:, c])
+                    self.variance[c] = np.var(x[:, c])
+                else:  # Conv case
+                    self.mean[c] = np.mean(x[:, c, :, :])
+                    self.variance[c] = np.var(x[:, c, :, :])
 
+                # Update running stats
+                self.running_mean[c] = (
+                    self.momentum * self.running_mean[c]
+                    + (1 - self.momentum) * self.mean[c]
+                )
+                self.running_var[c] = (
+                    self.momentum * self.running_var[c]
+                    + (1 - self.momentum) * self.variance[c]
+                )
+            else:
+                # Use running stats during inference
+                self.mean[c] = self.running_mean[c]
+                self.variance[c] = self.running_var[c]
+
+            if x.ndim == 2:  # Dense case
                 # Normalize
                 self.x_hat[:, c] = (x[:, c] - self.mean[c]) / np.sqrt(
                     self.variance[c] + self.epsilon
                 )
-
                 # Scale and shift
                 output[:, c] = self.gamma[c] * self.x_hat[:, c] + self.beta[c]
-
             else:  # Conv case
-                # Empirical mean and variance over spatial dimensions
-                self.mean[c] = np.mean(x[:, c, :, :])
-                self.variance[c] = np.var(x[:, c, :, :])
-
-                # Normalize
                 self.x_hat[:, c, :, :] = (x[:, c, :, :] - self.mean[c]) / np.sqrt(
                     self.variance[c] + self.epsilon
                 )
-
-                # Scale and shift
                 output[:, c, :, :] = (
                     self.gamma[c] * self.x_hat[:, c, :, :] + self.beta[c]
                 )
@@ -125,21 +143,14 @@ class BatchNormLayer:
         # Same logic as forward
         if dL_dout.ndim == 1:  # (C,)
             dL_dout = dL_dout[np.newaxis, :]
-        elif dL_dout.ndim == 2:  # (N, C)
-            pass
         elif dL_dout.ndim == 3:  # (C, H, W)
             dL_dout = dL_dout[np.newaxis, :, :, :]
 
-        if x.ndim == 2:
-            self.batch_size, self.num_channels = x.shape
-            N = self.batch_size
-        else:
-            self.batch_size, self.num_channels, self.input_height, self.input_width = (
-                x.shape
-            )
-
         # Total number of elements per channel
-        N = self.batch_size * self.input_height * self.input_width
+        if x.ndim == 2:  # Dense case
+            N = x.shape[0]
+        else:  # Conv case
+            N = x.shape[0] * x.shape[2] * x.shape[3]
 
         # Initialize gradients
         dL_dinput = np.zeros_like(x)
@@ -174,7 +185,6 @@ class BatchNormLayer:
                     + dL_dvar * (2 * (x[:, c] - self.mean[c]) / N)
                     + dL_dmean * (1 / N)
                 )
-
             else:  # Conv case
                 # Step 1: gradients w.r.t gamma and beta
                 dL_dgamma[c] = np.sum(dL_dout[:, c, :, :] * self.x_hat[:, c, :, :])
