@@ -17,11 +17,11 @@ def test_forward():
 
     # Training mode
     output_train = model.forward(x, training=True)
-    assert output_train.shape == (1, 7)
+    assert output_train.shape == (1, 2)
 
     # Inference mode
     output_eval = model.forward(x, training=False)
-    assert output_eval.shape == (1, 7)
+    assert output_eval.shape == (1, 2)
 
     # Outputs should differ due to BatchNorm / Dropout
     assert not np.allclose(output_train, output_eval)
@@ -35,13 +35,13 @@ def test_backward():
     gradients through all layers.
     """
 
-    x = np.random.randn(1, 1, 120, 120)
+    x = np.random.randn(1, 5, 120, 120)
 
     model = CNNModel()
 
     output = model.forward(x, training=True)
 
-    # Create dummy gradient from loss (same shape as output)
+    # Create dummy gradient from loss (same shape as output of (1,2))
     dL = np.random.randn(*output.shape)
 
     # Backward pass (lr=0 because optimizer handles updates)

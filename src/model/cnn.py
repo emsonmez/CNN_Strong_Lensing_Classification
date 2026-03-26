@@ -17,7 +17,7 @@ class CNNModel:
     Convolutional Neural Network (CNN) model and flowchart.
     """
 
-    def __init__(self, input_shape=(1, 120, 120)):
+    def __init__(self, input_shape=(5, 120, 120)):
         """
         Initialize CNN model architecture.
 
@@ -27,7 +27,8 @@ class CNNModel:
 
         # Convolutional backbone
         self.feature_extractor: List = [
-            ConvLayer(in_channels=1, out_channels=8, kernel_size=(3, 3)),
+            # 1: Single Channel, 5: Multi-Class for each Pan-STARRS1 filter (g,r,i,z,y)
+            ConvLayer(in_channels=5, out_channels=8, kernel_size=(3, 3)),
             BatchNormLayer(num_channels=8),
             ActivationLayer(alpha=0.01),
             MaxPoolLayer(pool_size=2, stride=2),
@@ -63,9 +64,8 @@ class CNNModel:
             BatchNormLayer(num_channels=128),
             ActivationLayer(alpha=0.01),
             DropoutLayer(dropout_rate=0.15),
-            # 7 classes (lensed quasar, supernoave, galaxy, their non-lensed versions,
-            # and a "other/unidentifiable" case; might decide to drop this last case)
-            DenseLayer(input_size=128, output_size=7),
+            # 2 classes (Lensed, Nonlensed)
+            DenseLayer(input_size=128, output_size=2),
         ]
 
     def forward(self, x: np.ndarray, training: bool = True) -> np.ndarray:

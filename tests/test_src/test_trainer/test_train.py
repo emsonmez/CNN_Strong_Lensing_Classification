@@ -13,8 +13,8 @@ def test_train():
     """
 
     # Fake data
-    X = np.random.randn(5, 1, 28, 28)
-    y = np.eye(7)[np.random.randint(0, 7, size=5)]
+    X = np.random.randn(5, 5, 28, 28)
+    y = np.eye(2)[np.random.randint(0, 2, size=5)]
 
     model = CNNModel(input_shape=(1, 28, 28))
     loss_fn = CrossEntropyLoss()

@@ -20,7 +20,7 @@ def test_predict():
     predictions_single = predictor.predict(X_single)
 
     # Should automatically add batch dimension
-    assert predictions_single.shape == (1, 7)
+    assert predictions_single.shape == (1, 2)
 
     # Check values are valid
     assert np.all(np.isfinite(predictions_single))
@@ -29,7 +29,7 @@ def test_predict():
     X_batch = np.random.randn(3, 1, 120, 120)
     predictions_batch = predictor.predict(X_batch)
 
-    assert predictions_batch.shape == (3, 7)
+    assert predictions_batch.shape == (3, 2)
 
     assert np.all(np.isfinite(predictions_batch))
 
