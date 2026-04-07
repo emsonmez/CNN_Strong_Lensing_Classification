@@ -213,72 +213,126 @@ def test_update_history():
     ], "accuracies not tracking multiple epochs"
 
 
-def test_plot_confusion_matrix():
+def test_plot_confusion_matrix(mocker):
     """
     Test the confusion matrix output of the Evaluator.
 
-    Verifies that the function runs without errors for a valid confusion matrix.
+    Verifies that the function runs without errors for a valid confusion matrix
+    (show=False), and plt.show() is called when show=True.
+
+    :param mocker: pytest mock fixture
+    :type mocker: object
     """
 
     evaluator = Evaluator()
     cm = np.array([[5, 2], [1, 7]])  # Sample confusion matrix
 
-    # Run plot function (just ensure no errors)
-    evaluator.plot_confusion_matrix(cm)
+    # Case 1: No GUI
+    evaluator.plot_confusion_matrix(cm, show=False)
+
+    # Case 2: Mock plt.show so no GUI is opened
+    mock_show = mocker.patch("matplotlib.pyplot.show")
+    evaluator.plot_confusion_matrix(cm, show=True)
+
+    mock_show.assert_called_once()
 
 
-def test_plot_roc():
+def test_plot_roc(mocker):
     """
     Test the the ROC curve of the Evaluator.
 
-    Vertify that the ROC curve plotting runs without errors.
+    Vertify that the ROC curve plotting runs without errors
+    (show=False), and plt.show() is called when show=True.
+
+    :param mocker: pytest mock fixture
+    :type mocker: object
     """
 
     evaluator = Evaluator()
     fpr = np.array([0.0, 0.2, 0.5, 1.0])
     tpr = np.array([0.0, 0.6, 0.8, 1.0])
 
-    evaluator.plot_roc(fpr, tpr)
+    # Case 1: No GUI
+    evaluator.plot_roc(fpr, tpr, show=False)
+
+    # Case 2: Mock plt.show so no GUI is opened
+    mock_show = mocker.patch("matplotlib.pyplot.show")
+    evaluator.plot_roc(fpr, tpr, show=True)
+
+    mock_show.assert_called_once()
 
 
-def test_plot_pr():
+def test_plot_pr(mocker):
     """
     Test the precision-recall curve output
     of the Evaluator.
 
-    Vertify that the precision-recall curve plotting runs without errors.
+    Vertify that the precision-recall curve plotting runs without errors
+    (show=False), and plt.show() is called when show=True.
+
+    :param mocker: pytest mock fixture
+    :type mocker: object
     """
 
     evaluator = Evaluator()
     recall = np.array([0.0, 0.4, 0.7, 1.0])
     precision = np.array([1.0, 0.8, 0.6, 0.0])
 
-    evaluator.plot_pr(recall, precision)
+    # Case 1: No GUI
+    evaluator.plot_pr(recall, precision, show=False)
+
+    # Case 2: Mock plt.show so no GUI is opened
+    mock_show = mocker.patch("matplotlib.pyplot.show")
+    evaluator.plot_pr(recall, precision, show=True)
+
+    mock_show.assert_called_once()
 
 
-def test_plot_accuracy():
+def test_plot_accuracy(mocker):
     """
     Test the accuracy vs epochs curve output
     of the Evaluator.
 
-    Vertify that the accuracy vs epochs plotting runs without errors.
+    Vertify that the accuracy vs epochs plotting runs without errors
+    (show=False), and plt.show() is called when show=True.
+
+    :param mocker: pytest mock fixture
+    :type mocker: object
     """
 
     evaluator = Evaluator()
     history = {"accuracy": [50, 60, 70, 80, 90]}
 
-    evaluator.plot_accuracy(history)
+    # Case 1: No GUI
+    evaluator.plot_accuracy(history, show=False)
+
+    # Case 2: Mock plt.show so no GUI is opened
+    mock_show = mocker.patch("matplotlib.pyplot.show")
+    evaluator.plot_accuracy(history, show=True)
+
+    mock_show.assert_called_once()
 
 
-def test_plot_loss_batches():
+def test_plot_loss_batches(mocker):
     """
     Test the loss vs training batches curve
     output of the Evaluator.
 
-    Vertify that the loss vs batch plotting runs without errors.
+    Vertify that the loss vs batch plotting runs without errors
+    (show=False), and plt.show() is called when show=True.
+
+    :param mocker: pytest mock fixture
+    :type mocker: object
     """
 
     evaluator = Evaluator()
     history = {"batch_loss": [0.9, 0.7, 0.6, 0.5, 0.4]}
 
-    evaluator.plot_loss_batches(history)
+    # Case 1: No GUI
+    evaluator.plot_loss_batches(history, show=False)
+
+    # Case 2: Mock plt.show so no GUI is opened
+    mock_show = mocker.patch("matplotlib.pyplot.show")
+    evaluator.plot_loss_batches(history, show=True)
+
+    mock_show.assert_called_once()

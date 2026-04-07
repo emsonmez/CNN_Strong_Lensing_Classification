@@ -216,12 +216,14 @@ class Evaluator:
         self.val_losses.append(val_loss)
         self.accuracies.append(accuracy)
 
-    def plot_confusion_matrix(self, cm: np.ndarray) -> None:
+    def plot_confusion_matrix(self, cm: np.ndarray, show: bool = True) -> None:
         """
         Plot the confusion matrix.
 
         :param cm: Confusion matrix
         :type cm: np.ndarray
+        :param show: Whether to display the plot
+        :type show: bool
         :return: None
         :rtype: None
         """
@@ -232,9 +234,13 @@ class Evaluator:
         plt.colorbar()
         plt.xlabel("Predicted")
         plt.ylabel("Actual")
-        plt.show()
 
-    def plot_roc(self, fpr: np.ndarray, tpr: np.ndarray) -> None:
+        if show:
+            plt.show()
+        else:
+            plt.close()
+
+    def plot_roc(self, fpr: np.ndarray, tpr: np.ndarray, show: bool = True) -> None:
         """
         Plot the ROC curve.
 
@@ -242,6 +248,8 @@ class Evaluator:
         :type fpr: np.ndarray
         :param tpr: True Positive Rate values
         :type tpr: np.ndarray
+        :param show: Whether to display the plot
+        :type show: bool
         :return: None
         :rtype: None
         """
@@ -251,9 +259,15 @@ class Evaluator:
         plt.title("ROC Curve")
         plt.xlabel("False Positive Rate")
         plt.ylabel("True Positive Rate")
-        plt.show()
 
-    def plot_pr(self, recall: np.ndarray, precision: np.ndarray) -> None:
+        if show:
+            plt.show()
+        else:
+            plt.close()
+
+    def plot_pr(
+        self, recall: np.ndarray, precision: np.ndarray, show: bool = True
+    ) -> None:
         """
         Plot the precision-recall curve.
 
@@ -261,6 +275,8 @@ class Evaluator:
         :type recall: np.ndarray
         :param precision: Precision values
         :type precision: np.ndarray
+        :param show: Whether to display the plot
+        :type show: bool
         :return: None
         :rtype: None
         """
@@ -270,14 +286,20 @@ class Evaluator:
         plt.title("Precision-Recall Curve")
         plt.xlabel("Recall")
         plt.ylabel("Precision")
-        plt.show()
 
-    def plot_accuracy(self, history: dict) -> None:
+        if show:
+            plt.show()
+        else:
+            plt.close()
+
+    def plot_accuracy(self, history: dict, show: bool = True) -> None:
         """
         Plot the accuracy vs epochs curve.
 
         :param history: Training history dictionary
         :type history: dict
+        :param show: Whether to display the plot
+        :type show: bool
         :return: None
         :rtype: None
         """
@@ -287,14 +309,20 @@ class Evaluator:
         plt.title("Accuracy vs Epochs")
         plt.xlabel("Epoch")
         plt.ylabel("Accuracy")
-        plt.show()
 
-    def plot_loss_batches(self, history: dict) -> None:
+        if show:
+            plt.show()
+        else:
+            plt.close()
+
+    def plot_loss_batches(self, history: dict, show: bool = True) -> None:
         """
         Plot the loss vs training batches curve.
 
         :param history: Training history dictionary
         :type history: dict
+        :param show: Whether to display the plot
+        :type show: bool
         :return: None
         :rtype: None
         """
@@ -304,4 +332,8 @@ class Evaluator:
         plt.title("Loss vs Training Batches")
         plt.xlabel("Batch")
         plt.ylabel("Loss")
-        plt.show()
+
+        if show:
+            plt.show()
+        else:
+            plt.close()

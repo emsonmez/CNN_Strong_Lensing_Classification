@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+env:
+  MPLBACKEND: Agg # forces non-interactive backend
+
 jobs:
   build:
     runs-on: ubuntu-latest

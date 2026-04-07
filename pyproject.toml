@@ -15,6 +15,7 @@ dependencies = [
     "jupyter",
     "pytest",
     "pytest-cov",
+    "pytest-mock",
     "pyswip"
 ]
 

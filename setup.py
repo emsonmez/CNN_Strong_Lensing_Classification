@@ -14,6 +14,7 @@ setup(
         "jupyter",
         "pytest",
         "pytest-cov",
+        "pytest-mock",
         "pyswip",
     ],
     extras_require={
