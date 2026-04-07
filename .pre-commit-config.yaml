@@ -74,4 +74,4 @@ repos:
         stages: [pre-push]
 
   # TODO: Docstring Formatter (docformatter) doesn't support Python 3.14, only previous versions
-  # TODO: Maybe add pyright
+  # TODO: Maybe add pyright or mypy (args: [--ignore-missing-imports])
