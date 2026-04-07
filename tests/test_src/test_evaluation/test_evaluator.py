@@ -1,5 +1,22 @@
+import matplotlib
+
+matplotlib.use("Agg")  # non-interactive backend
 import numpy as np
+import pytest
 from src.evaluation.evaluator import Evaluator
+
+
+@pytest.fixture(autouse=True)
+def close_plots():
+    """
+    Automatically close all matplotlib figures after every test
+    in this module. Prevents figure accumulation in headless CI environments
+    which can corrupt the coverage report.
+    """
+    import matplotlib.pyplot as plt
+
+    yield
+    plt.close("all")
 
 
 def test_confusion_matrix():
