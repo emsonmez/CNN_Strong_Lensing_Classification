@@ -231,7 +231,7 @@ def test_plot_confusion_matrix(mocker):
     evaluator.plot_confusion_matrix(cm, show=False)
 
     # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.pyplot.show")
+    mock_show = mocker.patch("matplotlib.figure.Figure.show")
     evaluator.plot_confusion_matrix(cm, show=True)
 
     mock_show.assert_called_once()
@@ -256,7 +256,7 @@ def test_plot_roc(mocker):
     evaluator.plot_roc(fpr, tpr, show=False)
 
     # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.pyplot.show")
+    mock_show = mocker.patch("matplotlib.figure.Figure.show")
     evaluator.plot_roc(fpr, tpr, show=True)
 
     mock_show.assert_called_once()
@@ -282,7 +282,7 @@ def test_plot_pr(mocker):
     evaluator.plot_pr(recall, precision, show=False)
 
     # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.pyplot.show")
+    mock_show = mocker.patch("matplotlib.figure.Figure.show")
     evaluator.plot_pr(recall, precision, show=True)
 
     mock_show.assert_called_once()
@@ -307,7 +307,7 @@ def test_plot_accuracy(mocker):
     evaluator.plot_accuracy(history, show=False)
 
     # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.pyplot.show")
+    mock_show = mocker.patch("matplotlib.figure.Figure.show")
     evaluator.plot_accuracy(history, show=True)
 
     mock_show.assert_called_once()
@@ -332,7 +332,7 @@ def test_plot_loss_batches(mocker):
     evaluator.plot_loss_batches(history, show=False)
 
     # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.pyplot.show")
+    mock_show = mocker.patch("matplotlib.figure.Figure.show")
     evaluator.plot_loss_batches(history, show=True)
 
     mock_show.assert_called_once()

@@ -228,17 +228,17 @@ class Evaluator:
         :rtype: None
         """
 
-        plt.figure()
-        plt.imshow(cm, interpolation="nearest")
-        plt.title("Confusion Matrix")
-        plt.colorbar()
-        plt.xlabel("Predicted")
-        plt.ylabel("Actual")
+        fig, ax = plt.subplots(figsize=(12, 8))
+        im = ax.imshow(cm, interpolation="nearest")
+        ax.set_title("Confusion Matrix")
+        ax.set_xlabel("Predicted")
+        ax.set_ylabel("Actual")
+        fig.colorbar(im, ax=ax)
 
         if show:
-            plt.show()
+            fig.show()
         else:
-            plt.close()
+            plt.close(fig)
 
     def plot_roc(self, fpr: np.ndarray, tpr: np.ndarray, show: bool = True) -> None:
         """
@@ -254,16 +254,16 @@ class Evaluator:
         :rtype: None
         """
 
-        plt.figure()
-        plt.plot(fpr, tpr)
-        plt.title("ROC Curve")
-        plt.xlabel("False Positive Rate")
-        plt.ylabel("True Positive Rate")
+        fig, ax = plt.subplots(figsize=(12, 8))
+        ax.plot(fpr, tpr)
+        ax.set_title("ROC Curve")
+        ax.set_xlabel("False Positive Rate")
+        ax.set_ylabel("True Positive Rate")
 
         if show:
-            plt.show()
+            fig.show()
         else:
-            plt.close()
+            plt.close(fig)
 
     def plot_pr(
         self, recall: np.ndarray, precision: np.ndarray, show: bool = True
@@ -281,16 +281,16 @@ class Evaluator:
         :rtype: None
         """
 
-        plt.figure()
-        plt.plot(recall, precision)
-        plt.title("Precision-Recall Curve")
-        plt.xlabel("Recall")
-        plt.ylabel("Precision")
+        fig, ax = plt.subplots(figsize=(12, 8))
+        ax.plot(recall, precision)
+        ax.set_title("Precision-Recall Curve")
+        ax.set_xlabel("Recall")
+        ax.set_ylabel("Precision")
 
         if show:
-            plt.show()
+            fig.show()
         else:
-            plt.close()
+            plt.close(fig)
 
     def plot_accuracy(self, history: dict, show: bool = True) -> None:
         """
@@ -304,16 +304,16 @@ class Evaluator:
         :rtype: None
         """
 
-        plt.figure()
-        plt.plot(history["accuracy"])
-        plt.title("Accuracy vs Epochs")
-        plt.xlabel("Epoch")
-        plt.ylabel("Accuracy")
+        fig, ax = plt.subplots(figsize=(12, 8))
+        ax.plot(history["accuracy"])
+        ax.set_title("Accuracy vs Epochs")
+        ax.set_xlabel("Epoch")
+        ax.set_ylabel("Accuracy")
 
         if show:
-            plt.show()
+            fig.show()
         else:
-            plt.close()
+            plt.close(fig)
 
     def plot_loss_batches(self, history: dict, show: bool = True) -> None:
         """
@@ -327,13 +327,13 @@ class Evaluator:
         :rtype: None
         """
 
-        plt.figure()
-        plt.plot(history["batch_loss"])
-        plt.title("Loss vs Training Batches")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
+        fig, ax = plt.subplots(figsize=(12, 8))
+        ax.plot(history["batch_loss"])
+        ax.set_title("Loss vs Training Batches")
+        ax.set_xlabel("Batch")
+        ax.set_ylabel("Loss")
 
         if show:
-            plt.show()
+            fig.show()
         else:
-            plt.close()
+            plt.close(fig)
