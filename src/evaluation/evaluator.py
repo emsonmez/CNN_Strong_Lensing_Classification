@@ -216,16 +216,14 @@ class Evaluator:
         self.val_losses.append(val_loss)
         self.accuracies.append(accuracy)
 
-    def plot_confusion_matrix(self, cm: np.ndarray, show: bool = True) -> None:
+    def plot_confusion_matrix(self, cm: np.ndarray) -> plt.Figure:
         """
         Plot the confusion matrix.
 
         :param cm: Confusion matrix
         :type cm: np.ndarray
-        :param show: Whether to display the plot
-        :type show: bool
-        :return: None
-        :rtype: None
+        :return: Matplotlib figure object
+        :rtype: matplotlib.figure.Figure
         """
 
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -235,12 +233,9 @@ class Evaluator:
         ax.set_ylabel("Actual")
         fig.colorbar(im, ax=ax)
 
-        if show:
-            fig.show()
-        else:
-            plt.close(fig)
+        return fig
 
-    def plot_roc(self, fpr: np.ndarray, tpr: np.ndarray, show: bool = True) -> None:
+    def plot_roc(self, fpr: np.ndarray, tpr: np.ndarray) -> plt.Figure:
         """
         Plot the ROC curve.
 
@@ -248,10 +243,8 @@ class Evaluator:
         :type fpr: np.ndarray
         :param tpr: True Positive Rate values
         :type tpr: np.ndarray
-        :param show: Whether to display the plot
-        :type show: bool
-        :return: None
-        :rtype: None
+        :return: Matplotlib figure object
+        :rtype: matplotlib.figure.Figure
         """
 
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -260,14 +253,9 @@ class Evaluator:
         ax.set_xlabel("False Positive Rate")
         ax.set_ylabel("True Positive Rate")
 
-        if show:
-            fig.show()
-        else:
-            plt.close(fig)
+        return fig
 
-    def plot_pr(
-        self, recall: np.ndarray, precision: np.ndarray, show: bool = True
-    ) -> None:
+    def plot_pr(self, recall: np.ndarray, precision: np.ndarray) -> plt.Figure:
         """
         Plot the precision-recall curve.
 
@@ -277,8 +265,8 @@ class Evaluator:
         :type precision: np.ndarray
         :param show: Whether to display the plot
         :type show: bool
-        :return: None
-        :rtype: None
+        :return: Matplotlib figure object
+        :rtype: matplotlib.figure.Figure
         """
 
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -287,21 +275,16 @@ class Evaluator:
         ax.set_xlabel("Recall")
         ax.set_ylabel("Precision")
 
-        if show:
-            fig.show()
-        else:
-            plt.close(fig)
+        return fig
 
-    def plot_accuracy(self, history: dict, show: bool = True) -> None:
+    def plot_accuracy(self, history: dict) -> plt.Figure:
         """
         Plot the accuracy vs epochs curve.
 
         :param history: Training history dictionary
         :type history: dict
-        :param show: Whether to display the plot
-        :type show: bool
-        :return: None
-        :rtype: None
+        :return: Matplotlib figure object
+        :rtype: matplotlib.figure.Figure
         """
 
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -310,12 +293,9 @@ class Evaluator:
         ax.set_xlabel("Epoch")
         ax.set_ylabel("Accuracy")
 
-        if show:
-            fig.show()
-        else:
-            plt.close(fig)
+        return fig
 
-    def plot_loss_batches(self, history: dict, show: bool = True) -> None:
+    def plot_loss_batches(self, history: dict) -> plt.Figure:
         """
         Plot the loss vs training batches curve.
 
@@ -323,8 +303,8 @@ class Evaluator:
         :type history: dict
         :param show: Whether to display the plot
         :type show: bool
-        :return: None
-        :rtype: None
+        :return: Matplotlib figure object
+        :rtype: matplotlib.figure.Figure
         """
 
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -333,7 +313,4 @@ class Evaluator:
         ax.set_xlabel("Batch")
         ax.set_ylabel("Loss")
 
-        if show:
-            fig.show()
-        else:
-            plt.close(fig)
+        return fig

@@ -3,20 +3,19 @@ import pytest
 import matplotlib
 
 matplotlib.use("Agg")  # non-interactive backend
+import matplotlib.pyplot as plt
 from src.evaluation.evaluator import Evaluator
 
 
 @pytest.fixture(autouse=True)
 def close_plots():
     """
-    Automatically close all matplotlib figures after every test
-    in this module. Prevents figure accumulation in headless CI environments
-    which can corrupt the coverage report.
+    Automatically close all matplotlib figures before and after every test
+    to prevent accumulation in headless CI environments.
     """
-    import matplotlib.pyplot as plt
-
+    plt.close("all")  # before test
     yield
-    plt.close("all")
+    plt.close("all")  # after test
 
 
 def test_confusion_matrix():
@@ -213,104 +212,94 @@ def test_update_history():
     ], "accuracies not tracking multiple epochs"
 
 
-def test_plot_confusion_matrix(mocker):
+def test_plot_confusion_matrix():
     """
     Test the confusion matrix output of the Evaluator.
 
-    Verifies that the function runs without errors for a valid confusion matrix
-    (show=False), and plt.show() is called when show=True.
-
-    :param mocker: pytest mock fixture
-    :type mocker: object
+    Vertify that a valid figure object is returned and
+    contains axes data.
     """
 
     evaluator = Evaluator()
     cm = np.array([[5, 2], [1, 7]])  # Sample confusion matrix
 
-    # Case 1: No GUI
-    evaluator.plot_confusion_matrix(cm, show=False)
+    fig = evaluator.plot_confusion_matrix(cm)
 
-    # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.figure.Figure.show")
-    evaluator.plot_confusion_matrix(cm, show=True)
+    # Check figure object
+    assert fig is not None
+    assert hasattr(fig, "axes")
+    assert len(fig.axes) > 0
 
-    mock_show.assert_called_once()
+    # Clean up
+    plt.close(fig)
+    plt.close("all")
 
 
-def test_plot_roc(mocker):
+def test_plot_roc():
     """
     Test the the ROC curve of the Evaluator.
 
-    Vertify that the ROC curve plotting runs without errors
-    (show=False), and plt.show() is called when show=True.
-
-    :param mocker: pytest mock fixture
-    :type mocker: object
+    Vertify that a valid figure object is returned and
+    contains axes data.
     """
 
     evaluator = Evaluator()
     fpr = np.array([0.0, 0.2, 0.5, 1.0])
     tpr = np.array([0.0, 0.6, 0.8, 1.0])
 
-    # Case 1: No GUI
-    evaluator.plot_roc(fpr, tpr, show=False)
+    fig = evaluator.plot_roc(fpr, tpr)
 
-    # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.figure.Figure.show")
-    evaluator.plot_roc(fpr, tpr, show=True)
+    assert fig is not None
+    assert hasattr(fig, "axes")
+    assert len(fig.axes) > 0
 
-    mock_show.assert_called_once()
+    plt.close(fig)
+    plt.close("all")
 
 
-def test_plot_pr(mocker):
+def test_plot_pr():
     """
     Test the precision-recall curve output
     of the Evaluator.
 
-    Vertify that the precision-recall curve plotting runs without errors
-    (show=False), and plt.show() is called when show=True.
-
-    :param mocker: pytest mock fixture
-    :type mocker: object
+    Vertify that a valid figure object is returned and
+    contains axes data.
     """
 
     evaluator = Evaluator()
     recall = np.array([0.0, 0.4, 0.7, 1.0])
     precision = np.array([1.0, 0.8, 0.6, 0.0])
 
-    # Case 1: No GUI
-    evaluator.plot_pr(recall, precision, show=False)
+    fig = evaluator.plot_pr(recall, precision)
 
-    # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.figure.Figure.show")
-    evaluator.plot_pr(recall, precision, show=True)
+    assert fig is not None
+    assert hasattr(fig, "axes")
+    assert len(fig.axes) > 0
 
-    mock_show.assert_called_once()
+    plt.close(fig)
+    plt.close("all")
 
 
-def test_plot_accuracy(mocker):
+def test_plot_accuracy():
     """
     Test the accuracy vs epochs curve output
     of the Evaluator.
 
-    Vertify that the accuracy vs epochs plotting runs without errors
-    (show=False), and plt.show() is called when show=True.
-
-    :param mocker: pytest mock fixture
-    :type mocker: object
+    Vertify that a valid figure object is returned and
+    contains axes data.
     """
 
     evaluator = Evaluator()
     history = {"accuracy": [50, 60, 70, 80, 90]}
 
-    # Case 1: No GUI
-    evaluator.plot_accuracy(history, show=False)
+    fig = evaluator.plot_accuracy(history)
 
-    # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.figure.Figure.show")
-    evaluator.plot_accuracy(history, show=True)
+    assert fig is not None
+    assert hasattr(fig, "axes")
+    assert len(fig.axes) > 0
 
-    mock_show.assert_called_once()
+    plt.close(fig)
+    plt.close("all")
 
 
 def test_plot_loss_batches(mocker):
@@ -318,21 +307,18 @@ def test_plot_loss_batches(mocker):
     Test the loss vs training batches curve
     output of the Evaluator.
 
-    Vertify that the loss vs batch plotting runs without errors
-    (show=False), and plt.show() is called when show=True.
-
-    :param mocker: pytest mock fixture
-    :type mocker: object
+    Vertify that a valid figure object is returned and
+    contains axes data.
     """
 
     evaluator = Evaluator()
     history = {"batch_loss": [0.9, 0.7, 0.6, 0.5, 0.4]}
 
-    # Case 1: No GUI
-    evaluator.plot_loss_batches(history, show=False)
+    fig = evaluator.plot_loss_batches(history)
 
-    # Case 2: Mock plt.show so no GUI is opened
-    mock_show = mocker.patch("matplotlib.figure.Figure.show")
-    evaluator.plot_loss_batches(history, show=True)
+    assert fig is not None
+    assert hasattr(fig, "axes")
+    assert len(fig.axes) > 0
 
-    mock_show.assert_called_once()
+    plt.close(fig)
+    plt.close("all")
