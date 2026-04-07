@@ -1,8 +1,8 @@
+import numpy as np
+import pytest
 import matplotlib
 
 matplotlib.use("Agg")  # non-interactive backend
-import numpy as np
-import pytest
 from src.evaluation.evaluator import Evaluator
 
 
