@@ -11,9 +11,9 @@ def test_forward():
     inference modes.
     """
 
-    # Dummy input (batch size = 1, 1 channel, 120x120 image)
-    x = np.random.randn(1, 1, 120, 120)
-    model = CNNModel()
+    # Dummy input
+    x = np.random.randn(1, 5, 120, 120)
+    model = CNNModel(input_shape=(5, 120, 120))
 
     # Training mode
     output_train = model.forward(x, training=True)
@@ -36,8 +36,7 @@ def test_backward():
     """
 
     x = np.random.randn(1, 5, 120, 120)
-
-    model = CNNModel()
+    model = CNNModel(input_shape=(5, 120, 120))
 
     output = model.forward(x, training=True)
 

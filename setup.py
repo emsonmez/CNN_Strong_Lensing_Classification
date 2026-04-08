@@ -16,6 +16,8 @@ setup(
         "pytest-cov",
         "pytest-mock",
         "pyswip",
+        "scikit-learn",
+        "scikit-optimize",
     ],
     extras_require={
         "dev": [

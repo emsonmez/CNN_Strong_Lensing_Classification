@@ -12,11 +12,11 @@ def test_predict():
     and batch inputs, and values are finite.
     """
 
-    model = CNNModel(input_shape=(1, 120, 120))
+    model = CNNModel(input_shape=(5, 120, 120))
     predictor = Predictor(model)
 
     # ---- Single image ----
-    X_single = np.random.randn(1, 120, 120)
+    X_single = np.random.randn(5, 120, 120)
     predictions_single = predictor.predict(X_single)
 
     # Should automatically add batch dimension
@@ -26,7 +26,7 @@ def test_predict():
     assert np.all(np.isfinite(predictions_single))
 
     # ---- Batch input ----
-    X_batch = np.random.randn(3, 1, 120, 120)
+    X_batch = np.random.randn(3, 5, 120, 120)
     predictions_batch = predictor.predict(X_batch)
 
     assert predictions_batch.shape == (3, 2)
@@ -43,11 +43,11 @@ def test_predict_classes():
     raw predict outputs.
     """
 
-    model = CNNModel(input_shape=(1, 120, 120))
+    model = CNNModel(input_shape=(5, 120, 120))
     predictor = Predictor(model)
 
     # Fake data
-    X = np.random.randn(4, 1, 120, 120)
+    X = np.random.randn(4, 5, 120, 120)
 
     predictions = predictor.predict(X)
     class_preds = predictor.predict_classes(X)
@@ -56,7 +56,7 @@ def test_predict_classes():
 
     # Check valid class indices
     assert np.all(class_preds >= 0)
-    assert np.all(class_preds < 7)
+    assert np.all(class_preds < 2)
 
     # Check consistency with argmax
     assert np.all(class_preds == np.argmax(predictions, axis=1))

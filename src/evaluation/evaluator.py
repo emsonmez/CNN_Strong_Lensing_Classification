@@ -229,10 +229,44 @@ class Evaluator:
         fig, ax = plt.subplots(figsize=(12, 8))
         im = ax.imshow(cm, interpolation="nearest")
         ax.set_title("Confusion Matrix")
-        ax.set_xlabel("Predicted")
-        ax.set_ylabel("Actual")
+        ax.set_xlabel("Predicted Label")
+        ax.set_ylabel("Actual Label")
+
+        # Row 0 = actual Non-Lensed, Row 1 = actual Lensed
+        # Col 0 = predicted Non-Lensed, Col 1 = predicted Lensed
+        ax.set_xticks([0, 1])
+        ax.set_yticks([0, 1])
+        ax.set_xticklabels(["Non-Lensed\n(Negative)", "Lensed\n(Positive)"])
+        ax.set_yticklabels(["Non-Lensed\n(Negative)", "Lensed\n(Positive)"])
+
         fig.colorbar(im, ax=ax)
 
+        # Inside cell labels matching [[TN, FP], [FN, TP]]
+        labels = [
+            [
+                "True Negative\nCorrectly rejected\nnon-lensed object",
+                "False Positive\nNon-lens incorrectly\nclassified as lensed",
+            ],
+            [
+                "False Negative\nReal lens missed\nby the classifier",
+                "True Positive\nCorrectly identified\ngravitational lens",
+            ],
+        ]
+
+        for i in range(2):
+            for j in range(2):
+                ax.text(
+                    j,
+                    i,
+                    f"{labels[i][j]}\n\nCount: {cm[i, j]}",
+                    ha="center",
+                    va="center",
+                    color="black",
+                    fontsize=9,
+                    fontweight="bold",
+                )
+
+        plt.close(fig)
         return fig
 
     def plot_roc(self, fpr: np.ndarray, tpr: np.ndarray) -> plt.Figure:

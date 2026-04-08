@@ -23,7 +23,7 @@ def test_train():
     X_val = np.random.randn(4, 5, 28, 28)  # validation samples
     y_val = np.eye(2)[np.random.randint(0, 2, size=4)]
 
-    model = CNNModel(input_shape=(1, 28, 28))
+    model = CNNModel(input_shape=(5, 28, 28))
     loss_fn = CrossEntropyLoss()
     optimizer = AdamOptimizer(lr=0.001)
 

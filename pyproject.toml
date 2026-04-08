@@ -16,7 +16,9 @@ dependencies = [
     "pytest",
     "pytest-cov",
     "pytest-mock",
-    "pyswip"
+    "pyswip",
+    "scikit-learn",
+    "scikit-optimize"
 ]
 
 # Ruff configuration

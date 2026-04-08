@@ -17,28 +17,52 @@ class CNNModel:
     Convolutional Neural Network (CNN) model and flowchart.
     """
 
-    def __init__(self, input_shape=(5, 120, 120)):
+    def __init__(
+        self,
+        input_shape=(5, 120, 120),
+        conv_channels=(8, 16, 32),
+        kernel_size=3,
+        pool_size=2,
+        alpha=0.01,
+        dropout_rate=0.15,
+        hidden_size=128,
+    ):
         """
         Initialize CNN model architecture.
 
         :param input_shape: Shape of input image (C, H, W)
         :type input_shape: tuple
+        :param conv_channels: Output channels for conv layers
+        :type conv_channels: tuple
+        :param kernel_size: Convolution kernel size
+        :type kernel_size: int
+        :param pool_size: Max pooling size (Note that pool_size = stride)
+        :type pool_size: int
+        :param alpha: LeakyReLU slope
+        :type alpha: float
+        :param dropout_rate: Dropout rate
+        :type dropout_rate: float
+        :param hidden_size: Dense layer size
+        :type hidden_size: int
         """
+        # Extract input channels dynamically
+        in_channels = input_shape[0]
+        c1, c2, c3 = conv_channels  # Conv batch layers levels 1,2,3
 
         # Convolutional backbone
         self.feature_extractor: List = [
             # 1: Single Channel, 5: Multi-Class for each Pan-STARRS1 filter (g,r,i,z,y)
-            ConvLayer(in_channels=5, out_channels=8, kernel_size=(3, 3)),
-            BatchNormLayer(num_channels=8),
-            ActivationLayer(alpha=0.01),
-            MaxPoolLayer(pool_size=2, stride=2),
-            ConvLayer(in_channels=8, out_channels=16, kernel_size=(3, 3)),
-            BatchNormLayer(num_channels=16),
-            ActivationLayer(alpha=0.01),
-            MaxPoolLayer(pool_size=2, stride=2),
-            ConvLayer(in_channels=16, out_channels=32, kernel_size=(3, 3)),
-            BatchNormLayer(num_channels=32),
-            ActivationLayer(alpha=0.01),
+            ConvLayer(in_channels, c1, (kernel_size, kernel_size)),
+            BatchNormLayer(c1),
+            ActivationLayer(alpha),
+            MaxPoolLayer(pool_size, pool_size),
+            ConvLayer(c1, c2, (kernel_size, kernel_size)),
+            BatchNormLayer(c2),
+            ActivationLayer(alpha),
+            MaxPoolLayer(pool_size, pool_size),
+            ConvLayer(c2, c3, (kernel_size, kernel_size)),
+            BatchNormLayer(c3),
+            ActivationLayer(alpha),
         ]
 
         # Compute flatten size dynamically
@@ -53,19 +77,19 @@ class CNNModel:
             else:
                 x = layer.forward(x)
 
-        self.flatten_size = x.size // x.shape[0]
+        self.flatten_size = x.reshape(1, -1).shape[1]
 
         # Rest of the full model
         self.layers: List = [
             *self.feature_extractor,
             FlattenLayer(),
             # Dense Block
-            DenseLayer(input_size=self.flatten_size, output_size=128),
-            BatchNormLayer(num_channels=128),
-            ActivationLayer(alpha=0.01),
-            DropoutLayer(dropout_rate=0.15),
-            # 2 classes (Lensed, Nonlensed)
-            DenseLayer(input_size=128, output_size=2),
+            DenseLayer(self.flatten_size, hidden_size),
+            BatchNormLayer(hidden_size),
+            ActivationLayer(alpha),
+            DropoutLayer(dropout_rate),
+            # Binary classification (Lensed or Nonlensed)
+            DenseLayer(hidden_size, 2),
         ]
 
     def forward(self, x: np.ndarray, training: bool = True) -> np.ndarray:
