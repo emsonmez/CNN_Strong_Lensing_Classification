@@ -53,6 +53,14 @@ class Trainer:
         :rtype: dict
         """
 
+        # Making sure all downstream operations is consistent
+        # regardless of how the labels were originally supplied
+        num_classes = self.model.forward(X[:1], training=False).shape[1]
+        if y.ndim == 1:
+            y = np.eye(num_classes)[y.astype(int)]
+        if y_val is not None and y_val.ndim == 1:
+            y_val = np.eye(num_classes)[y_val.astype(int)]
+
         num_samples = len(X)
 
         # History dictionary for tracking metrics
@@ -90,7 +98,7 @@ class Trainer:
                 # Accumulate weighted loss for epoch average
                 total_loss += loss * len(X_batch)
 
-                # Accuracy (batch)
+                # Accuracy (batch; guaranteed 2D here)
                 correct_predictions += np.sum(
                     np.argmax(y_pred, axis=1) == np.argmax(y_batch, axis=1)
                 )
@@ -116,7 +124,7 @@ class Trainer:
                 # Validation loss
                 val_loss = self.loss_fn.forward(y_val_pred, y_val)
 
-                # Validation accuracy
+                # Validation accuracy (guaranteed 2D here)
                 val_accuracy = (
                     np.mean(np.argmax(y_val_pred, axis=1) == np.argmax(y_val, axis=1))
                     * 100.0

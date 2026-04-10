@@ -29,12 +29,19 @@ class CrossEntropyLoss:
         Compute the forward pass of the cross-entropy loss.
 
         :param y_pred: Predicted probabilities (after softmax)
+        of shape (N, num_classes)
         :type y_pred: np.ndarray
-        :param y_true: True labels (one-hot encoded)
+        :param y_true: True labels (one-hot encoded or integer class indices)
         :type y_true: np.ndarray
         :return: Scalar loss value
         :rtype: float
         """
+
+        # Making sure computation is consistent
+        # regardless of how y was originally supplied
+        if y_true.ndim == 1:
+            num_classes = y_pred.shape[1]
+            y_true = np.eye(num_classes)[y_true.astype(int)]
 
         self.y_pred = y_pred
         self.y_true = y_true

@@ -30,15 +30,15 @@ class CNNModel:
         """
         Initialize CNN model architecture.
 
-        :param input_shape: Shape of input image (C, H, W)
+        :param input_shape: Shape of input tensor image (C, H, W)
         :type input_shape: tuple
-        :param conv_channels: Output channels for conv layers
+        :param conv_channels: Convolution layer channels
         :type conv_channels: tuple
         :param kernel_size: Convolution kernel size
         :type kernel_size: int
         :param pool_size: Max pooling size (Note that pool_size = stride)
         :type pool_size: int
-        :param alpha: LeakyReLU slope
+        :param alpha: LeakyReLU Activation slope
         :type alpha: float
         :param dropout_rate: Dropout rate
         :type dropout_rate: float

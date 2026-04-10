@@ -12,8 +12,9 @@ def test_train():
     Vertify training runs without errors,
     history is correctly returnes returns epoch-level loss,
     accuracy, and batch loss, loss values are valid (positive),
-    and model weights are updated. Generalized for both validation
-    and non-validation cases.
+    and model weights are updated. Generalized for one-hot (2D) and integer
+    (1D) label inputs for both y and y_val, and the no-validation
+    else branch.
     """
 
     # Fake training and validation data
@@ -35,7 +36,7 @@ def test_train():
 
     trainer = Trainer(model, loss_fn, optimizer)
 
-    # Train model for 2 epochs with validation
+    # Case 1: 2D one-hot encoded y and y_val; standard path
     history = trainer.train(X_train, y_train, X_val, y_val, epochs=2, batch_size=5)
 
     # Check history dictionary keys
@@ -57,7 +58,21 @@ def test_train():
     assert all(batch_loss > 0 for batch_loss in history["batch_loss"])
     assert all(val_loss > 0 for val_loss in history["val_loss"])
 
-    # Train model without validation data to test else branch
+    # Case 2: 1D integer class indices for y_value
+    y_train_labels = np.random.randint(0, 2, size=5)
+    y_val_labels = np.random.randint(0, 2, size=4)
+
+    history_labels = trainer.train(
+        X_train, y_train_labels, X_val, y_val_labels, epochs=1, batch_size=5
+    )
+
+    assert len(history_labels["epoch_loss"]) == 1
+    assert len(history_labels["val_loss"]) == 1
+
+    assert all(loss > 0 for loss in history_labels["epoch_loss"])
+    assert all(val_loss > 0 for val_loss in history_labels["val_loss"])
+
+    # Case 3: No validation data; for the else branch
     history_no_val = trainer.train(X_train, y_train, epochs=1, batch_size=5)
 
     # Check that val_loss and val_accuracy remain empty
@@ -69,7 +84,7 @@ def test_train():
     assert len(history_no_val["epoch_accuracy"]) == 1
     assert len(history_no_val["batch_loss"]) >= 1  # at least one batch
 
-    # Check weights updated
+    # Check weights updated across all training calls
     updated_weights = []
     for layer in model.layers:
         if hasattr(layer, "weight"):
