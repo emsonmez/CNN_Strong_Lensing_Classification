@@ -60,7 +60,7 @@ class Evaluator:
         Compute scalar evaluation metrics from the confusion matrix.
 
         :return: Dictionary containing accuracy, precision, recall,
-                fallout, and F1-score
+        fallout, and F1-score
         :rtype: dict
         """
 
@@ -68,14 +68,21 @@ class Evaluator:
         if self.cm is None:
             raise ValueError("Confusion matrix has not been computed.")
 
-        TN, FP, FN, TP = self.cm.ravel()
+        TN = self.cm[0, 0]
+        FP = self.cm[0, 1]
+        FN = self.cm[1, 0]
+        TP = self.cm[1, 1]
 
         # Compute scalar metrics
-        accuracy = (TP + TN) / (TP + TN + FP + FN)
-        precision = TP / (TP + FP + 1e-8)
-        recall = TP / (TP + FN + 1e-8)
-        fallout = FP / (FP + TN + 1e-8)
-        f1 = 2 * (precision * recall) / (precision + recall + 1e-8)
+        accuracy = float((TP + TN) / (TP + TN + FP + FN))
+        precision = float(TP / (TP + FP)) if (TP + FP) > 0 else 0.0
+        recall = float(TP / (TP + FN)) if (TP + FN) > 0 else 0.0
+        fallout = float(FP / (FP + TN)) if (FP + TN) > 0 else 0.0
+        f1 = (
+            float(2 * (precision * recall) / (precision + recall))
+            if (precision + recall) > 0
+            else 0.0
+        )
 
         # Store metrics
         self.metrics = {
@@ -145,8 +152,8 @@ class Evaluator:
             TN, FP, FN, TP = self.cm.ravel()
 
             # Compute rates
-            tpr = TP / (TP + FN + 1e-8)  # True Positive Rate
-            fpr = FP / (FP + TN + 1e-8)  # False Positive Rate
+            tpr = TP / (TP + FN) if (TP + FN) > 0 else 0.0  # True Positive Rate
+            fpr = FP / (FP + TN) if (FP + TN) > 0 else 0.0  # False Positive Rate
 
             tpr_list.append(tpr)
             fpr_list.append(fpr)

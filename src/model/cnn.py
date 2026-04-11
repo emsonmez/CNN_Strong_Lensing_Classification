@@ -19,13 +19,13 @@ class CNNModel:
 
     def __init__(
         self,
-        input_shape=(5, 120, 120),
-        conv_channels=(8, 16, 32),
-        kernel_size=3,
-        pool_size=2,
-        alpha=0.01,
-        dropout_rate=0.15,
-        hidden_size=128,
+        input_shape: tuple = (5, 120, 120),
+        conv_channels: tuple = (8, 16, 32),
+        kernel_size: int = 3,
+        pool_size: int = 2,
+        alpha: float = 0.01,
+        dropout_rate: float = 0.15,
+        hidden_size: int = 128,
     ):
         """
         Initialize CNN model architecture.
@@ -45,8 +45,10 @@ class CNNModel:
         :param hidden_size: Dense layer size
         :type hidden_size: int
         """
-        # Extract input channels dynamically
+
+        # Extract input channels dynamically and as a tuple of ints
         in_channels = input_shape[0]
+        conv_channels = tuple(map(int, conv_channels))
         c1, c2, c3 = conv_channels  # Conv batch layers levels 1,2,3
 
         # Convolutional backbone
@@ -77,7 +79,7 @@ class CNNModel:
             else:
                 x = layer.forward(x)
 
-        self.flatten_size = x.reshape(1, -1).shape[1]
+        self.flatten_size = int(np.prod(x.shape[1:]))
 
         # Rest of the full model
         self.layers: List = [

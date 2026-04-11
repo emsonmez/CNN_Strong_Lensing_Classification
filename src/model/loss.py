@@ -14,7 +14,7 @@ class CrossEntropyLoss:
         """
         Initialize loss parameters.
 
-        :param epsilon: Small value to prevent log(0) --> inf
+        :param epsilon: Numerical stability term
         :type epsilon: float
         """
 
@@ -31,7 +31,7 @@ class CrossEntropyLoss:
         :param y_pred: Predicted probabilities (after softmax)
         of shape (N, num_classes)
         :type y_pred: np.ndarray
-        :param y_true: True labels (one-hot encoded or integer class indices)
+        :param y_true: True labels (one-hot vectors or integer indices)
         :type y_true: np.ndarray
         :return: Scalar loss value
         :rtype: float
