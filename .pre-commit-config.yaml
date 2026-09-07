@@ -26,13 +26,13 @@ repos:
 
   # 2. Python linting & formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.9
+    rev: v0.16.6
     hooks:
       - id: ruff
         args: [--fix]
 
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
       - id: black
 
@@ -43,14 +43,14 @@ repos:
       - id: nbqa-ruff
       - id: nbqa-black
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
       - id: black-jupyter
         language_version: python3
 
   # 3. Dependency safety / lock file checks
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.3
+    rev: 0.12.10
     hooks:
       - id: uv-lock
         args: [--locked]
